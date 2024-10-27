@@ -100,8 +100,66 @@ def get_info_for_user_degree(year, input_degree):
             writer.writerow([frm_moondate,f"{sign} {degree:.2f}°",input_degree,frm_degree_date,f"{calculated_sign} {calculated_degree:.2f}°"])
 
 # Example usage
-year = int(input("Enter year to calculate new moons: "))
-print_new_moon_info(year)
+#year = int(input("Enter year to calculate new moons: "))
+#print_new_moon_info(year)
 
-input_degree = int(input("Enter degree to find information for: "))
-get_info_for_user_degree(year, input_degree)
+#input_degree = int(input("Enter degree to find information for: "))
+#get_info_for_user_degree(year, input_degree)
+
+# Function to get exact time and date for a specific year, month, sign, and degree input by the user
+def get_exact_time_for_degree():
+    year = int(input("Enter year: "))
+    month = int(input("Enter month (1-12): "))
+    sign_options = [
+        'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+    ]
+    print("Select sign:")
+    for i, sign in enumerate(sign_options, 1):
+        print(f"{i}. {sign}")
+    sign_index = int(input("Enter the number corresponding to the sign (1-12): "))
+    input_sign = sign_options[sign_index - 1]
+    input_degree = int(input("Enter degree (0-29): "))
+    
+    date = datetime.datetime(year, month, 1, 0, 0)
+    end_date = datetime.datetime(year, month + 1, 1, 0, 0) if month < 12 else datetime.datetime(year + 1, 1, 1, 0, 0)
+    found = False
+    while date < end_date:
+        moon = ephem.Moon(date)
+        moon.compute(date)
+        ecliptic_longitude = float(ephem.Ecliptic(moon).lon) * 180 / math.pi
+        sign = get_astrological_sign(ecliptic_longitude)
+        degree = ecliptic_longitude % 30
+        if sign == input_sign and int(degree) == input_degree:
+            cst_offset = datetime.timedelta(hours=-6)
+            cst_date = date + cst_offset
+            frm_cst_date = cst_date.strftime('%d-%m-%Y %H:%M:%S CST')
+            #print(f"Exact time and date: {date.strftime('%Y-%m-%d %H:%M:%S UTC')} in {sign} at {degree:.2f}°")
+            print(f"Exact time and date: {frm_cst_date} in {sign} at {degree:.2f}°")
+            found = True
+            break
+        date += datetime.timedelta(hours=1)
+    if not found:
+        print("No exact match found within the specified month.")
+
+# Menu to select options
+def menu():
+    while True:
+        print("\nMenu:")
+        print("1. Calculate new moons and degrees for a given year")
+        print("2. Get exact time and date for a specific year, month, sign, and degree")
+        print("3. Exit")
+        choice = int(input("Enter your choice: "))
+        if choice == 1:
+            year = int(input("Enter year to calculate new moons: "))
+            print_new_moon_info(year)
+            input_degree = int(input("Enter degree to find information for: "))
+            get_info_for_user_degree(year, input_degree)
+        elif choice == 2:
+            get_exact_time_for_degree()
+        elif choice == 3:
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+# Run the menu
+menu()
