@@ -190,14 +190,85 @@ def find_planetary_aspects(planet1_name, planet2_name, year):
     
     return aspects
 
-# Menu to select options
+def find_planets_at_special_longitudes(year):
+    special_longitudes = [0, 1, 24, 25, 48, 49, 72, 73, 96, 97, 
+                         120, 121, 145, 146, 169, 170, 193, 194, 
+                         217, 218, 241, 242, 265, 266, 289, 290, 
+                         313, 314, 337, 338]
+    
+    planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 
+              'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+    
+    start_date = datetime.datetime(year, 1, 1)
+    end_date = datetime.datetime(year + 1, 1, 1)
+    current_date = start_date
+    
+    results = []
+    
+    print(f"\nSearching for planets at special longitudes in {year}...")
+    
+    while current_date < end_date:
+        for planet_name in planets:
+            try:
+                planet = getattr(ephem, planet_name)()
+                planet.compute(current_date)
+                lon = math.degrees(ephem.Ecliptic(planet).lon)
+                normalized_lon = lon % 360
+                
+                for special_lon in special_longitudes:
+                    if abs(normalized_lon - special_lon) < 0.5:
+                        sign = get_astrological_sign(normalized_lon)
+                        degree = normalized_lon % 30
+                        
+                        formatted_date = current_date.strftime('%Y-%m-%d %H:%M:%S UT')
+                        
+                        results.append({
+                            'date': current_date.date(),  # Store date separately for grouping
+                            'datetime': formatted_date,
+                            'planet': planet_name,
+                            'longitude': round(normalized_lon, 2),
+                            'sign': sign,
+                            'degree': round(degree, 2)
+                        })
+                        
+            except AttributeError:
+                continue
+        
+        current_date += datetime.timedelta(days=1)
+    
+    if results:
+        print("\nPlanets at special longitudes found:")
+        print("{:<20} {:<10} {:<8} {:<12} {:<6}".format(
+            "Date/Time", "Planet", "Longitude", "Sign", "Degree"))
+        print("=" * 60)
+        
+        current_display_date = None
+        for result in sorted(results, key=lambda x: x['date']):
+            if current_display_date != result['date']:
+                if current_display_date is not None:
+                    print("=" * 60)
+                current_display_date = result['date']
+                print(f"=== {current_display_date.strftime('%Y-%m-%d')} ===")
+            
+            print("{:<20} {:<10} {:<8} {:<12} {:<6}".format(
+                result['datetime'],
+                result['planet'],
+                result['longitude'],
+                result['sign'],
+                result['degree']))
+        
+        print("=" * 60)
+    else:
+        print("No planets found at the specified longitudes during this year.")
+
 def menu():
     while True:
         print("\nMenu:")
         print("1. Calculate new moons and degrees for a given year")
         print("2. Get exact time and date for a specific year, month, sign, and degree")
         print("3. Find major aspects between two planets")
-        print("4. Exit")
+        print("4. Find planets at special longitudes")
+        print("5. Exit")
         choice = int(input("Enter your choice: "))
         
         if choice == 1:
@@ -224,6 +295,10 @@ def menu():
                 print(f"No major aspects found between {planet1} and {planet2} in {year}")
                 
         elif choice == 4:
+            year = int(input("Enter year to search for planets at special longitudes: "))
+            find_planets_at_special_longitudes(year)
+            
+        elif choice == 5:
             break
             
         else:
