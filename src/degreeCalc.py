@@ -141,23 +141,91 @@ def get_exact_time_for_degree():
     if not found:
         print("No exact match found within the specified month.")
 
+def find_planetary_aspects(planet1_name, planet2_name, year):
+    start_date = datetime.date(year, 1, 1)
+    end_date = datetime.date(year + 1, 1, 1)
+    current_date = start_date
+    aspects = []
+    orb = 1.0  # Orb of 1 degree
+    valid_planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                    'Saturn', 'Uranus', 'Neptune', 'Pluto']
+
+    if planet1_name not in valid_planets or planet2_name not in valid_planets:
+        print("Invalid planet name. Valid planets are:", ', '.join(valid_planets))
+        return []
+
+    while current_date < end_date:
+        try:
+            dt = datetime.datetime(current_date.year, current_date.month, current_date.day, 12, 0)
+            planet1 = getattr(ephem, planet1_name)()
+            planet2 = getattr(ephem, planet2_name)()
+            
+            planet1.compute(dt)
+            planet2.compute(dt)
+            
+            lon1 = math.degrees(ephem.Ecliptic(planet1).lon)
+            lon2 = math.degrees(ephem.Ecliptic(planet2).lon)
+            
+            angle_diff = abs(lon1 - lon2) % 360
+            angle = min(angle_diff, 360 - angle_diff)
+            
+            aspect = None
+            if angle <= orb:
+                aspect = ('Conjunction ☌', 0)
+            elif abs(angle - 180) <= orb:
+                aspect = ('Opposition ☍', 180)
+            elif abs(angle - 90) <= orb:
+                aspect = ('Square ☐', 90)
+            elif abs(angle - 120) <= orb:
+                aspect = ('Trine △', 120)
+                
+            if aspect:
+                aspects.append((dt.date(), aspect[0], aspect[1]))
+                
+        except Exception as e:
+            print(f"Error calculating aspects: {e}")
+            return []
+        
+        current_date += datetime.timedelta(days=1)
+    
+    return aspects
+
 # Menu to select options
 def menu():
     while True:
         print("\nMenu:")
         print("1. Calculate new moons and degrees for a given year")
         print("2. Get exact time and date for a specific year, month, sign, and degree")
-        print("3. Exit")
+        print("3. Find major aspects between two planets")
+        print("4. Exit")
         choice = int(input("Enter your choice: "))
+        
         if choice == 1:
             year = int(input("Enter year to calculate new moons: "))
             print_new_moon_info(year)
             input_degree = int(input("Enter degree to find information for: "))
             get_info_for_user_degree(year, input_degree)
+            
         elif choice == 2:
             get_exact_time_for_degree()
+            
         elif choice == 3:
+            planet1 = input("Enter first planet (e.g., Mars): ").strip().capitalize()
+            planet2 = input("Enter second planet (e.g., Venus): ").strip().capitalize()
+            year = int(input("Enter year: "))
+            
+            aspects = find_planetary_aspects(planet1, planet2, year)
+            
+            if aspects:
+                print(f"\nMajor aspects between {planet1} and {planet2} in {year}:")
+                for date, aspect, angle in aspects:
+                    print(f"{date.strftime('%Y-%m-%d')}: {aspect} ({angle}°)")
+            else:
+                print(f"No major aspects found between {planet1} and {planet2} in {year}")
+                
+        elif choice == 4:
             break
+            
         else:
             print("Invalid choice. Please try again.")
 
