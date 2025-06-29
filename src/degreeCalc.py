@@ -551,6 +551,89 @@ def find_repeating_aspects_by_date():
     else:
         print(f"No dates with multiple aspects found for {planet_name} in {year}")
 
+def find_multiple_aspect_dates():
+    planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars',
+              'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+    
+    # Get user input
+    print("\nAvailable planets:", ', '.join(planets))
+    planet_name = input("Enter planet name: ").strip().capitalize()
+    year = int(input("Enter year: "))
+    
+    if planet_name not in planets:
+        print("Invalid planet name. Please choose from the available planets.")
+        return
+    
+    # Set date range
+    start_date = datetime.datetime(year, 1, 1)
+    end_date = datetime.datetime(year + 1, 1, 1)
+    current_date = start_date
+    
+    date_aspects = {}
+    orb = 1.0  # 1 degree orb for aspect detection
+    
+    print(f"\nFinding dates with 2+ aspects for {planet_name} in {year}...")
+    
+    while current_date < end_date:
+        try:
+            # Compute position of the main planet
+            main_planet = getattr(ephem, planet_name)()
+            main_planet.compute(current_date)
+            main_lon = math.degrees(ephem.Ecliptic(main_planet).lon)
+            
+            aspects_on_date = []
+            
+            # Check aspects with other planets
+            for other_planet_name in planets:
+                if other_planet_name == planet_name:
+                    continue
+                
+                try:
+                    other_planet = getattr(ephem, other_planet_name)()
+                    other_planet.compute(current_date)
+                    other_lon = math.degrees(ephem.Ecliptic(other_planet).lon)
+                    
+                    # Calculate angular difference
+                    angle_diff = abs(main_lon - other_lon) % 360
+                    angle = min(angle_diff, 360 - angle_diff)
+                    
+                    # Determine aspect
+                    if angle <= orb:
+                        aspects_on_date.append((other_planet_name, 'Conjunction ☌', 0))
+                    elif abs(angle - 180) <= orb:
+                        aspects_on_date.append((other_planet_name, 'Opposition ☍', 180))
+                    elif abs(angle - 90) <= orb:
+                        aspects_on_date.append((other_planet_name, 'Square ☐', 90))
+                    elif abs(angle - 120) <= orb:
+                        aspects_on_date.append((other_planet_name, 'Trine △', 120))
+                        
+                except AttributeError:
+                    continue
+            
+            # Only store dates with 2+ aspects
+            if len(aspects_on_date) >= 2:
+                date_key = current_date.date()
+                date_aspects[date_key] = aspects_on_date
+                
+        except Exception as e:
+            print(f"Error calculating aspects: {e}")
+            continue
+        
+        # Move to next day
+        current_date += datetime.timedelta(days=1)
+    
+    # Display results
+    if date_aspects:
+        print(f"\nDates with 2+ aspects for {planet_name} in {year}:")
+        print("=" * 80)
+        for date, aspects in sorted(date_aspects.items()):
+            print(f"\n{date.strftime('%Y-%m-%d')}:")
+            for planet, aspect, angle in aspects:
+                print(f"  • {aspect} with {planet} ({angle}°)")
+        print("=" * 80)
+    else:
+        print(f"No dates found with 2+ aspects for {planet_name} in {year}")
+
 def menu():
     while True:
         print("\nMenu:")
@@ -561,7 +644,9 @@ def menu():
         print("5. Find all aspects for a planet during a month")
         print("6. Find repeating aspects for a planet during a year")
         print("7. Find repeating aspects for a planet during a year (grouped by date)")
-        print("8. Exit")
+        print("8. Find dates with 2+ aspects for a planet")
+        #print("9. Find repeating aspects for a planet during a year (grouped by planet)")
+        print("9. Exit")
         choice = int(input("Enter your choice: "))
         
         if choice == 1:
@@ -601,6 +686,9 @@ def menu():
             find_repeating_aspects_by_date()
             
         elif choice == 8:
+            find_multiple_aspect_dates()
+            
+        elif choice == 9:
             break
             
         else:
