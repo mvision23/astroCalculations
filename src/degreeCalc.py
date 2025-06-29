@@ -261,6 +261,110 @@ def find_planets_at_special_longitudes(year):
     else:
         print("No planets found at the specified longitudes during this year.")
 
+def get_planet_aspects_for_month():
+    planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 
+              'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+    
+    # Get user input
+    print("\nAvailable planets:", ', '.join(planets))
+    planet_name = input("Enter planet name: ").strip().capitalize()
+    year = int(input("Enter year: "))
+    month = int(input("Enter month (1-12): "))
+    
+    if planet_name not in planets:
+        print("Invalid planet name. Please choose from the available planets.")
+        return
+    
+    # Set date range
+    start_date = datetime.datetime(year, month, 1)
+    if month == 12:
+        end_date = datetime.datetime(year + 1, 1, 1)
+    else:
+        end_date = datetime.datetime(year, month + 1, 1)
+    
+    current_date = start_date
+    results = []
+    orb = 1.0  # 1 degree orb for aspect detection
+    
+    print(f"\nCalculating aspects for {planet_name} during {start_date.strftime('%B %Y')}...")
+    
+    while current_date < end_date:
+        try:
+            # Compute position of the main planet
+            main_planet = getattr(ephem, planet_name)()
+            main_planet.compute(current_date)
+            main_lon = math.degrees(ephem.Ecliptic(main_planet).lon)
+            
+            # Check aspects with other planets
+            for other_planet_name in planets:
+                if other_planet_name == planet_name:
+                    continue  # Skip self-comparison
+                
+                try:
+                    other_planet = getattr(ephem, other_planet_name)()
+                    other_planet.compute(current_date)
+                    other_lon = math.degrees(ephem.Ecliptic(other_planet).lon)
+                    
+                    # Calculate angular difference
+                    angle_diff = abs(main_lon - other_lon) % 360
+                    angle = min(angle_diff, 360 - angle_diff)
+                    
+                    # Determine aspect
+                    aspect = None
+                    if angle <= orb:
+                        aspect = ('Conjunction ☌', 0)
+                    elif abs(angle - 180) <= orb:
+                        aspect = ('Opposition ☍', 180)
+                    elif abs(angle - 90) <= orb:
+                        aspect = ('Square ☐', 90)
+                    elif abs(angle - 120) <= orb:
+                        aspect = ('Trine △', 120)
+                    
+                    if aspect:
+                        results.append({
+                            'date': current_date,
+                            'planet1': planet_name,
+                            'planet2': other_planet_name,
+                            'aspect': aspect[0],
+                            'angle': aspect[1],
+                            'exact_angle': round(angle, 2)
+                        })
+                        
+                except AttributeError:
+                    continue  # Skip if planet doesn't exist in ephem
+            
+        except Exception as e:
+            print(f"Error calculating aspects: {e}")
+            continue
+        
+        # Move to next day (or smaller interval if you prefer)
+        current_date += datetime.timedelta(days=1)
+    
+    # Display results
+    if results:
+        print(f"\nAspects for {planet_name} during {start_date.strftime('%B %Y')}:")
+        print("{:<20} {:<15} {:<10} {:<15} {:<8}".format(
+            "Date", "Planet 1", "Aspect", "Planet 2", "Angle"))
+        print("=" * 80)
+        
+        current_display_date = None
+        for result in sorted(results, key=lambda x: x['date']):
+            if current_display_date != result['date'].date():
+                if current_display_date is not None:
+                    print("-" * 80)
+                current_display_date = result['date'].date()
+            
+            print("{:<20} {:<15} {:<10} {:<15} {:<8}°".format(
+                result['date'].strftime('%Y-%m-%d %H:%M UT'),
+                result['planet1'],
+                result['aspect'],
+                result['planet2'],
+                result['angle']))
+        
+        print("=" * 80)
+    else:
+        print(f"No aspects found for {planet_name} during this period.")
+
 def menu():
     while True:
         print("\nMenu:")
@@ -268,7 +372,8 @@ def menu():
         print("2. Get exact time and date for a specific year, month, sign, and degree")
         print("3. Find major aspects between two planets")
         print("4. Find planets at special longitudes")
-        print("5. Exit")
+        print("5. Find all aspects for a planet during a month")
+        print("6. Exit")
         choice = int(input("Enter your choice: "))
         
         if choice == 1:
@@ -299,10 +404,12 @@ def menu():
             find_planets_at_special_longitudes(year)
             
         elif choice == 5:
+            get_planet_aspects_for_month()
+            
+        elif choice == 6:
             break
             
         else:
             print("Invalid choice. Please try again.")
-
 # Run the menu
 menu()
