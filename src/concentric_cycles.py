@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Circle as CirclePatch
 from matplotlib.colors import hsv_to_rgb
+from matplotlib import patheffects  # Correct import for path effects
 
 def draw_concentric_circles():
     # Configuration
@@ -13,19 +14,19 @@ def draw_concentric_circles():
     total_numbers = num_circles * segments
     max_inputs = 10
     
-    # Planet symbols dictionary
-    planet_symbols = {
-        'sun': '☉',
-        'moon': '☽',
-        'mercury': '☿',
-        'venus': '♀',
-        'earth': '♁',
-        'mars': '♂',
-        'jupiter': '♃',
-        'saturn': '♄',
-        'uranus': '⛢',
-        'neptune': '♆',
-        'pluto': '♇'
+    # Planet symbols and properties
+    planet_data = {
+        'sun': {'symbol': '☉', 'size': 22, 'color': (1, 0.8, 0)},
+        'moon': {'symbol': '☽', 'size': 20, 'color': (0.9, 0.9, 1)},
+        'mercury': {'symbol': '☿', 'size': 18, 'color': (0.7, 0.7, 0.7)},
+        'venus': {'symbol': '♀', 'size': 20, 'color': (0.9, 0.7, 0.9)},
+        'earth': {'symbol': '♁', 'size': 18, 'color': (0.2, 0.5, 0.8)},
+        'mars': {'symbol': '♂', 'size': 20, 'color': (1, 0.3, 0.2)},
+        'jupiter': {'symbol': '♃', 'size': 24, 'color': (0.8, 0.6, 0.4)},
+        'saturn': {'symbol': '♄', 'size': 22, 'color': (0.9, 0.8, 0.5)},
+        'uranus': {'symbol': '⛢', 'size': 20, 'color': (0.6, 0.8, 0.9)},
+        'neptune': {'symbol': '♆', 'size': 20, 'color': (0.2, 0.3, 0.9)},
+        'pluto': {'symbol': '♇', 'size': 18, 'color': (0.5, 0.2, 0.5)}
     }
     
     # Get planet-degree pairs from user
@@ -43,8 +44,8 @@ def draw_concentric_circles():
             continue
             
         planet, degree_str = parts
-        if planet not in planet_symbols:
-            print(f"Unknown planet. Choose from: {', '.join(planet_symbols.keys())}")
+        if planet not in planet_data:
+            print(f"Unknown planet. Choose from: {', '.join(planet_data.keys())}")
             continue
             
         try:
@@ -53,7 +54,6 @@ def draw_concentric_circles():
                 print(f"Degree must be between 1 and {total_numbers}")
                 continue
                 
-            # Check if degree is already taken
             if any(d[1] == degree for d in planet_degrees):
                 print(f"Degree {degree} is already marked. Please choose another.")
                 continue
@@ -73,13 +73,10 @@ def draw_concentric_circles():
     
     # Calculate max radius
     max_radius = base_radius + (num_circles - 1) * radius_step
-    plt.xlim(-max_radius-1, max_radius+1)
-    plt.ylim(-max_radius-1, max_radius+1)
+    plt.xlim(-max_radius-1.5, max_radius+1.5)
+    plt.ylim(-max_radius-1.5, max_radius+1.5)
     
-    # Generate distinct colors for each planet
-    colors = [hsv_to_rgb([i/len(planet_degrees), 0.8, 0.8]) for i in range(len(planet_degrees))]
-    
-    # Draw circles and numbers
+    # Draw circles and numbers first (background elements)
     current_number = 1
     for circle_idx in range(num_circles):
         radius = base_radius + circle_idx * radius_step
@@ -88,7 +85,7 @@ def draw_concentric_circles():
         # Draw the circle
         linewidth = 1.5 if circle_idx == 0 else 0.7
         circle = plt.Circle(center, radius, fill=False, 
-                          color='black', linewidth=linewidth)
+                          color='black', linewidth=linewidth, alpha=0.7)
         ax.add_patch(circle)
         
         # Draw radial lines
@@ -97,9 +94,9 @@ def draw_concentric_circles():
             y_end = radius * np.sin(angle)
             linewidth = 0.5 if circle_idx > 0 else 0.8
             ax.plot([0, x_end], [0, y_end], 'black', 
-                   linewidth=linewidth, alpha=0.7)
+                   linewidth=linewidth, alpha=0.4)
         
-        # Add numbers
+        # Add numbers (make them slightly transparent)
         for i, angle in enumerate(angles):
             text_radius = radius - 0.15 if circle_idx == 0 else radius - 0.2
             x = text_radius * np.cos(angle)
@@ -109,52 +106,67 @@ def draw_concentric_circles():
             
             ax.text(x, y, str(current_number), 
                    ha='center', va='center', 
-                   fontsize=fontsize,
+                   fontsize=fontsize, alpha=0.8,
                    bbox=dict(facecolor='white', edgecolor='none', 
-                             pad=0.1, alpha=0.8))
-            
-            # Check if this number should be marked
-            for idx, (planet, degree) in enumerate(planet_degrees):
-                if current_number == degree:
-                    color = colors[idx]
-                    symbol = planet_symbols[planet]
-                    
-                    # Calculate position at the circle's edge
-                    mark_radius = radius
-                    mark_x = mark_radius * np.cos(angle)
-                    mark_y = mark_radius * np.sin(angle)
-                    
-                    # Add a colored symbol
-                    ax.text(mark_x, mark_y, symbol, 
-                           ha='center', va='center', 
-                           fontsize=16, color=color, zorder=10)
-                    
-                    # Add connecting line from center
-                    ax.plot([0, mark_x], [0, mark_y], 
-                           color=color, linestyle='--', linewidth=1, alpha=0.5)
-                    
-                    # Add annotation with planet name
-                    ax.annotate(f'{planet.title()} ({degree})',
-                               xy=(mark_x, mark_y),
-                               xytext=(mark_x*1.2, mark_y*1.2),
-                               arrowprops=dict(arrowstyle="->", color=color),
-                               color=color, fontsize=14)
+                             pad=0.1, alpha=0.6))
             
             current_number += 1
     
-    # Create legend
-    legend_elements = [
-        plt.Line2D([0], [0], marker='$'+planet_symbols[p]+'$', color='w', 
-                  label=f'{p.title()} ({d})', markerfacecolor=colors[i], 
-                  markersize=15, markeredgecolor=colors[i])
-        for i, (p, d) in enumerate(planet_degrees)
-    ]
-    ax.legend(handles=legend_elements, loc='upper right', 
-             title="Planetary Positions", fontsize=10)
+    # Now draw planetary markers (foreground elements)
+    for planet, degree in planet_degrees:
+        # Find which circle and angle this degree is on
+        circle_idx = (degree - 1) // segments
+        radius = base_radius + circle_idx * radius_step
+        angle = 2 * np.pi * ((degree - 1) % segments) / segments
+        
+        # Get planet properties
+        props = planet_data[planet]
+        symbol = props['symbol']
+        color = props['color']
+        size = props['size']
+        
+        # Calculate position
+        mark_x = radius * np.cos(angle)
+        mark_y = radius * np.sin(angle)
+        
+        # Draw connecting line (behind planet symbol)
+        ax.plot([0, mark_x], [0, mark_y], 
+               color=color, linestyle='-', linewidth=1.5, alpha=0.6, zorder=5)
+        
+        # Draw the planet symbol (foreground)
+        ax.text(mark_x, mark_y, symbol, 
+               ha='center', va='center', 
+               fontsize=size, color=color, 
+               zorder=10, fontweight='bold',
+               path_effects=[patheffects.withStroke(linewidth=2, foreground='black')])
+        
+        # Add degree annotation at edge
+        annotation_radius = max_radius + 0.8
+        annot_x = annotation_radius * np.cos(angle)
+        annot_y = annotation_radius * np.sin(angle)
+        
+        ax.text(annot_x, annot_y, f"{degree}°", 
+               ha='center', va='center', 
+               color='white', fontsize=10, zorder=10,
+               bbox=dict(facecolor=color, edgecolor='black', 
+                         pad=2, alpha=0.9))
     
-    plt.title(f'Planetary Positions on Concentric Circles (1-{total_numbers})', 
-             pad=20, fontsize=14)
+    # Create legend outside the wheel
+    legend_elements = [
+        plt.Line2D([0], [0], marker='$'+planet_data[p]['symbol']+'$', color='w',
+                  label=f'{p.title()} ({d}°)', 
+                  markerfacecolor=planet_data[p]['color'],
+                  markersize=15, markeredgecolor='black', markeredgewidth=1)
+        for p, d in planet_degrees
+    ]
+    
+    ax.legend(handles=legend_elements, loc='upper left', 
+             title="Planetary Positions", fontsize=10,
+             bbox_to_anchor=(1.02, 1), borderaxespad=0.)
+    
+    plt.title('Planetary Positions on Zodiac Wheel', pad=20, fontsize=16)
     plt.tight_layout()
+    plt.subplots_adjust(right=0.82)  # Make space for legend
     plt.show()
 
 if __name__ == "__main__":
