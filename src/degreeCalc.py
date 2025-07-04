@@ -634,6 +634,168 @@ def find_multiple_aspect_dates():
     else:
         print(f"No dates found with 2+ aspects for {planet_name} in {year}")
 
+def calculate_planetary_positions():
+    planets = [
+        'Sun', 'Moon', 'Mercury', 'Venus', 'Mars',
+        'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'
+    ]
+    
+    # Get user input
+    date_str = input("Enter date (YYYY-MM-DD): ").strip()
+    try:
+        input_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+    except ValueError:
+        print("Invalid date format. Please use YYYY-MM-DD.")
+        return
+    
+    print(f"\nPlanetary positions for {input_date.strftime('%Y-%m-%d')}:")
+    print("=" * 100)
+    print("{:<10} {:<10} {:<15} {:<15} {:<10}".format(
+        "Planet", "Longitude", "Sign", "Degree", "Retrograde"))
+    print("-" * 100)
+    
+    # We'll track previous positions to detect retrograde
+    prev_positions = {}
+    
+    # First compute all positions for the day before to compare
+    prev_date = input_date - datetime.timedelta(days=1)
+    for planet_name in planets:
+        try:
+            planet = getattr(ephem, planet_name)()
+            planet.compute(prev_date)
+            ecliptic = ephem.Ecliptic(planet)
+            prev_positions[planet_name] = math.degrees(ecliptic.lon)
+        except:
+            prev_positions[planet_name] = None
+    
+    # Now compute current positions
+    for planet_name in planets:
+        try:
+            # Calculate position
+            planet = getattr(ephem, planet_name)()
+            planet.compute(input_date)
+            ecliptic = ephem.Ecliptic(planet)
+            lon_degrees = math.degrees(ecliptic.lon)
+            normalized_lon = lon_degrees % 360
+            sign = get_astrological_sign(normalized_lon)
+            degree = normalized_lon % 30
+            
+            # Check retrograde status by comparing with previous day
+            retrograde = ""
+            if planet_name not in ['Sun', 'Moon'] and prev_positions[planet_name] is not None:
+                # Calculate daily motion
+                current_lon = normalized_lon
+                prev_lon = prev_positions[planet_name] % 360
+                motion = (current_lon - prev_lon) % 360
+                # If motion is > 180 degrees, it's actually moving backward
+                if motion > 180:
+                    retrograde = "Rx"
+            
+            # Format output
+            print("{:<10} {:<10.2f}° {:<15} {:<15.2f}° {:<10}".format(
+                planet_name,
+                normalized_lon,
+                sign,
+                degree,
+                retrograde))
+                
+        except Exception as e:
+            print(f"Error calculating {planet_name}: {str(e)}")
+            continue
+    
+    print("=" * 100)
+
+def find_planets_at_zero_degree():
+    planets = [
+        'Sun', 'Moon', 'Mercury', 'Venus', 'Mars',
+        'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'
+    ]
+    
+    year = int(input("Enter year to analyze: "))
+    orb = 0.5  # Orb of 0.5 degrees for precision
+    
+    print(f"\nFinding planets at 0° of signs in {year} (grouped by month):")
+    print("=" * 100)
+    print("{:<12} {:<10} {:<15} {:<10} {:<10}".format(
+        "Date", "Planet", "Sign", "Degree", "Retrograde"))
+    print("-" * 100)
+    
+    # Initialize monthly results dictionary
+    monthly_results = {month: {} for month in range(1, 13)}
+    
+    current_date = datetime.datetime(year, 1, 1)
+    end_date = datetime.datetime(year + 1, 1, 1)
+    
+    while current_date < end_date:
+        for planet_name in planets:
+            try:
+                planet = getattr(ephem, planet_name)()
+                planet.compute(current_date)
+                lon = math.degrees(ephem.Ecliptic(planet).lon)
+                normalized_lon = lon % 360
+                degree = normalized_lon % 30
+                
+                # Check retrograde status (except for Sun and Moon)
+                retrograde = ""
+                if planet_name not in ['Sun', 'Moon']:
+                    # Compare with position 6 hours ago to determine motion
+                    prev_date = current_date - datetime.timedelta(hours=6)
+                    planet_prev = getattr(ephem, planet_name)()
+                    planet_prev.compute(prev_date)
+                    lon_prev = math.degrees(ephem.Ecliptic(planet_prev).lon)
+                    motion = (normalized_lon - lon_prev) % 360
+                    if motion > 180:
+                        retrograde = "Rx"
+                
+                # Check if planet is within orb of 0° of any sign
+                if degree <= orb or degree >= (30 - orb):
+                    sign = get_astrological_sign(normalized_lon)
+                    date_key = current_date.date()
+                    
+                    # Only count when entering a new sign (approaching 0°)
+                    if degree <= orb:
+                        month = current_date.month
+                        if planet_name not in monthly_results[month].get(date_key, {}):
+                            if date_key not in monthly_results[month]:
+                                monthly_results[month][date_key] = {}
+                            monthly_results[month][date_key][planet_name] = (
+                                sign,
+                                round(degree, 2),
+                                retrograde
+                            )
+                        
+            except Exception as e:
+                print(f"Error calculating {planet_name}: {str(e)}")
+                continue
+        
+        # Move forward by 6 hours for more precise timing
+        current_date += datetime.timedelta(hours=6)
+    
+    # Print results grouped by month
+    found_any = False
+    for month in range(1, 13):
+        month_name = datetime.date(year, month, 1).strftime('%B')
+        month_data = monthly_results[month]
+        
+        if month_data:
+            found_any = True
+            print(f"\n{month_name}:")
+            print("-" * 100)
+            
+            # Sort events by date
+            for date in sorted(month_data.keys()):
+                for planet, (sign, degree, retrograde) in month_data[date].items():
+                    print("{:<12} {:<10} {:<15} {:<10.2f}° {:<10}".format(
+                        date.strftime('%Y-%m-%d'),
+                        planet,
+                        sign,
+                        degree,
+                        retrograde))
+    
+    if not found_any:
+        print("No planets found at 0° of signs during this year.")
+    print("=" * 100)
+
 def menu():
     while True:
         print("\nMenu:")
@@ -646,7 +808,9 @@ def menu():
         print("7. Find repeating aspects for a planet during a year (grouped by date)")
         print("8. Find dates with 2+ aspects for a planet")
         #print("9. Find repeating aspects for a planet during a year (grouped by planet)")
-        print("9. Exit")
+        print("9. Calculate all planetary positions for a date")
+        print("10. Find planets at 0° of signs (by month)")
+        print("11. Exit")
         choice = int(input("Enter your choice: "))
         
         if choice == 1:
@@ -687,10 +851,16 @@ def menu():
             
         elif choice == 8:
             find_multiple_aspect_dates()
-            
+        
         elif choice == 9:
+            calculate_planetary_positions()
+                
+        elif choice == 10:
+            find_planets_at_zero_degree()
+        
+        elif choice == 11:
             break
-            
+
         else:
             print("Invalid choice. Please try again.")
 # Run the menu
