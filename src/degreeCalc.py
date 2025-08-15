@@ -172,6 +172,8 @@ def find_planetary_aspects(planet1_name, planet2_name, year):
             aspect = None
             if angle <= orb:
                 aspect = ('Conjunction ☌', 0)
+            elif abs(angle - 60) <= orb:
+                aspect = ('Sextile ⚹', 60)
             elif abs(angle - 180) <= orb:
                 aspect = ('Opposition ☍', 180)
             elif abs(angle - 90) <= orb:
@@ -313,6 +315,8 @@ def get_planet_aspects_for_month():
                     aspect = None
                     if angle <= orb:
                         aspect = ('Conjunction ☌', 0)
+                    elif abs(angle - 60) <= orb:
+                        aspect = ('Sextile ⚹', 60)
                     elif abs(angle - 180) <= orb:
                         aspect = ('Opposition ☍', 180)
                     elif abs(angle - 90) <= orb:
@@ -413,6 +417,8 @@ def find_repeating_aspects():
                     aspect = None
                     if angle <= orb:
                         aspect = ('Conjunction ☌', 0)
+                    elif abs(angle - 60) <= orb:
+                       aspect = ('Sextile ⚹', 60)
                     elif abs(angle - 180) <= orb:
                         aspect = ('Opposition ☍', 180)
                     elif abs(angle - 90) <= orb:
@@ -509,6 +515,8 @@ def find_repeating_aspects_by_date():
                     aspect = None
                     if angle <= orb:
                         aspect = ('Conjunction ☌', 0)
+                    elif abs(angle - 60) <= orb:
+                        aspect = ('Sextile ⚹', 60)
                     elif abs(angle - 180) <= orb:
                         aspect = ('Opposition ☍', 180)
                     elif abs(angle - 90) <= orb:
@@ -600,6 +608,8 @@ def find_multiple_aspect_dates():
                     # Determine aspect
                     if angle <= orb:
                         aspects_on_date.append((other_planet_name, 'Conjunction ☌', 0))
+                    elif abs(angle - 60) <= orb:
+                        aspects_on_date.append((other_planet_name, 'Sextile ⚹', 60))
                     elif abs(angle - 180) <= orb:
                         aspects_on_date.append((other_planet_name, 'Opposition ☍', 180))
                     elif abs(angle - 90) <= orb:
@@ -796,6 +806,215 @@ def find_planets_at_zero_degree():
         print("No planets found at 0° of signs during this year.")
     print("=" * 100)
 
+def find_planetary_alignments():
+    planets = [
+        'Sun', 'Moon', 'Mercury', 'Venus', 'Mars',
+        'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'
+    ]
+    
+    year = int(input("Enter year to analyze: "))
+    orb = 1.0  # 1 degree orb for alignment detection
+    
+    print(f"\nFinding planetary alignments in {year} (same 24° segment):")
+    print("=" * 80)
+    
+    current_date = datetime.datetime(year, 1, 1)
+    end_date = datetime.datetime(year + 1, 1, 1)
+    
+    daily_results = {}
+    
+    while current_date < end_date:
+        planet_positions = {}
+        segment_groups = {}
+        
+        for planet_name in planets:
+            try:
+                planet = getattr(ephem, planet_name)()
+                planet.compute(current_date)
+                lon = math.degrees(ephem.Ecliptic(planet).lon)
+                normalized_lon = lon % 360
+                if normalized_lon == 0:
+                    normalized_lon = 360
+                
+                # Determine segment (1-24) and circle (0-14)
+                segment = int(normalized_lon % 24) or 24  # 1-24
+                circle = int((normalized_lon - 1) // 24)   # 0-14
+                
+                # Determine retrograde status
+                retrograde = False
+                if planet_name not in ['Sun', 'Moon']:
+                    prev_date = current_date - datetime.timedelta(hours=6)
+                    planet_prev = getattr(ephem, planet_name)()
+                    planet_prev.compute(prev_date)
+                    lon_prev = math.degrees(ephem.Ecliptic(planet_prev).lon)
+                    motion = (normalized_lon - lon_prev) % 360
+                    if motion > 180:
+                        retrograde = True
+                
+                planet_data = {
+                    'degree': normalized_lon,
+                    'retrograde': retrograde
+                }
+                
+                # Group by segment
+                if segment not in segment_groups:
+                    segment_groups[segment] = []
+                segment_groups[segment].append((planet_name, planet_data))
+                
+            except Exception as e:
+                print(f"Error calculating {planet_name}: {str(e)}")
+                continue
+        
+        # Find alignments (same segment)
+        date_key = current_date.date()
+        for segment, planets_in_segment in segment_groups.items():
+            if len(planets_in_segment) >= 2:
+                if date_key not in daily_results:
+                    daily_results[date_key] = []
+                
+                # Format planet names with Rx if retrograde
+                planet_list = []
+                degrees = []
+                for planet_name, data in planets_in_segment:
+                    display_name = planet_name
+                    if data['retrograde']:
+                        display_name += "(Rx)"
+                    planet_list.append(display_name)
+                    degrees.append(f"{data['degree']:.1f}°")
+                
+                daily_results[date_key].append((
+                    segment,
+                    ", ".join(planet_list),
+                    ", ".join(degrees)
+                ))
+        
+        current_date += datetime.timedelta(days=1)
+    
+    # Print results
+    if daily_results:
+        for date in sorted(daily_results.keys()):
+            print(f"===========================================================")
+            print(f"==={date.strftime('%Y-%m-%d')}===")
+            for segment, planet_list, degree_list in daily_results[date]:
+                # Apply color formatting based on segment
+                if segment == 1:
+                    # Green for segment 1
+                    planet_list = f"\033[92m{planet_list.ljust(30)}\033[0m"
+                    degree_list = f"\033[92m{degree_list}\033[0m"
+                elif segment == 24:
+                    # Red for segment 24
+                    planet_list = f"\033[91m{planet_list.ljust(30)}\033[0m"
+                    degree_list = f"\033[91m{degree_list}\033[0m"
+                
+                print(f" {planet_list.ljust(30)} {degree_list}")
+    else:
+        print("No planetary alignments found during this year.")
+    print("=" * 80)
+
+def calculate_monthly_aspects():
+    planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars',
+              'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+    
+    # Get user input
+    year = int(input("Enter year: "))
+    month = int(input("Enter month (1-12): "))
+    orb = 1.0  # 1 degree orb for aspect detection
+    
+    start_date = datetime.datetime(year, month, 1)
+    if month == 12:
+        end_date = datetime.datetime(year + 1, 1, 1)
+    else:
+        end_date = datetime.datetime(year, month + 1, 1)
+    
+    print(f"\nCalculating all planetary aspects for {start_date.strftime('%B %Y')}:")
+    print("=" * 120)
+    print("{:<12} {:<25} {:<15} {:<25} {:<10}".format(
+        "Date", "Planet 1 (Sign°)", "Aspect", "Planet 2 (Sign°)", "Angle"))
+    print("-" * 120)
+    
+    aspect_counts = {}
+    current_date = start_date
+    
+    while current_date < end_date:
+        # Calculate positions and signs for all planets
+        planet_data = {}
+        for planet_name in planets:
+            try:
+                planet = getattr(ephem, planet_name)()
+                planet.compute(current_date)
+                lon = math.degrees(ephem.Ecliptic(planet).lon)
+                sign = get_astrological_sign(lon)
+                degree = lon % 30
+                planet_data[planet_name] = {
+                    'lon': lon,
+                    'sign': sign,
+                    'degree': degree
+                }
+            except Exception as e:
+                print(f"Error calculating {planet_name}: {str(e)}")
+                continue
+        
+        # Check all planet pairs
+        checked_pairs = set()
+        for i in range(len(planets)):
+            for j in range(i + 1, len(planets)):
+                planet1 = planets[i]
+                planet2 = planets[j]
+                
+                if planet1 not in planet_data or planet2 not in planet_data:
+                    continue
+                
+                data1 = planet_data[planet1]
+                data2 = planet_data[planet2]
+                angle_diff = abs(data1['lon'] - data2['lon']) % 360
+                angle = min(angle_diff, 360 - angle_diff)
+                
+                # Determine aspect
+                aspect = None
+                if angle <= orb:
+                    aspect = ('Conjunction ☌', 0)
+                elif abs(angle - 60) <= orb:
+                    aspect = ('Sextile ⚹', 60)
+                elif abs(angle - 90) <= orb:
+                    aspect = ('Square ☐', 90)
+                elif abs(angle - 120) <= orb:
+                    aspect = ('Trine △', 120)
+                elif abs(angle - 180) <= orb:
+                    aspect = ('Opposition ☍', 180)
+                
+                if aspect:
+                    date_key = current_date.date()
+                    aspect_key = (planet1, aspect[0], planet2)
+                    
+                    # Count aspect occurrences
+                    if aspect_key not in aspect_counts:
+                        aspect_counts[aspect_key] = 0
+                    aspect_counts[aspect_key] += 1
+                    
+                    # Format planet info with sign and degree
+                    planet1_info = f"{planet1} ({data1['sign']} {data1['degree']:.1f}°)"
+                    planet2_info = f"{planet2} ({data2['sign']} {data2['degree']:.1f}°)"
+                    
+                    # Print daily aspects
+                    print("{:<12} {:<25} {:<15} {:<25} {:<10}°".format(
+                        date_key.strftime('%Y-%m-%d'),
+                        planet1_info,
+                        aspect[0],
+                        planet2_info,
+                        aspect[1]))
+        
+        current_date += datetime.timedelta(days=1)
+    
+    # Print aspect summary
+    if aspect_counts:
+        print("\nAspect Summary for the month:")
+        print("-" * 70)
+        for (planet1, aspect, planet2), count in aspect_counts.items():
+            print(f"{aspect} between {planet1} and {planet2}: {count} times")
+    else:
+        print("\nNo planetary aspects found during this month.")
+    print("=" * 120)
+
 def menu():
     while True:
         print("\nMenu:")
@@ -810,7 +1029,10 @@ def menu():
         #print("9. Find repeating aspects for a planet during a year (grouped by planet)")
         print("9. Calculate all planetary positions for a date")
         print("10. Find planets at 0° of signs (by month)")
-        print("11. Exit")
+        print("11. Find planetary alignments (same degree/segment)")
+        print("12. Calculate all aspects for all planets in a month")
+        print("13. Exit")
+        #print("12. Exit")
         choice = int(input("Enter your choice: "))
         
         if choice == 1:
@@ -857,10 +1079,15 @@ def menu():
                 
         elif choice == 10:
             find_planets_at_zero_degree()
-        
-        elif choice == 11:
-            break
 
+        elif choice == 11:
+            find_planetary_alignments()
+        
+        elif choice == 12:
+            calculate_monthly_aspects()
+            
+        elif choice == 12:
+            break
         else:
             print("Invalid choice. Please try again.")
 # Run the menu
