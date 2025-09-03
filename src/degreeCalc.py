@@ -1138,10 +1138,11 @@ def calculate_monthly_aspects():
     month = int(input("Enter month (1-12): "))
     
     # Orb settings optimized for Mercury/Mars while preserving Neptune aspects
-    base_orb = 2.0
+    base_orb = 2.5
     orbs = {
-        'Mercury': 3.0,  # Wider orb for Mercury
-        'Mars': 3.0,     # Wider orb for Mars
+        'Mercury': 3.5,  # Wider orb for Mercury
+        'Mars': 3.5,     # Wider orb for Mars
+        'Sun': 1,
         'default': base_orb
     }
     
@@ -1195,9 +1196,9 @@ def calculate_monthly_aspects():
                 # Determine orb - use planet-specific orbs when available
                 orb = max(orbs.get(p1, base_orb), orbs.get(p2, base_orb))
                 
-                # Special case: if either planet is Mercury or Mars, use larger orb for all aspects
+                # Special case: if either planet is Mercury, Moon or Mars, use larger orb for all aspects
                 if p1 in ['Mercury', 'Mars'] or p2 in ['Mercury', 'Mars']:
-                    orb = max(orb, 2.5)  # Ensure at least 2.5° orb for Mercury/Mars aspects
+                    orb = max(orb, 2.5)  # Ensure at least 2.5° orb for Mercury/Mars/Moon aspects
                 
                 # Check all aspect types
                 for aspect_angle, aspect_name in [
@@ -1312,7 +1313,7 @@ def menu():
         elif choice == 12:
             calculate_monthly_aspects()
             
-        elif choice == 12:
+        elif choice == 13:
             break
         else:
             print("Invalid choice. Please try again.")
