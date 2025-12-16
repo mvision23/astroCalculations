@@ -92,7 +92,7 @@ def draw_concentric_circles():
         for angle in angles:
             x_end = radius * np.cos(angle)
             y_end = radius * np.sin(angle)
-            linewidth = 0.5 if circle_idx > 0 else 0.8
+            linewidth = 0.2 #if circle_idx > 0 else 0.8
             ax.plot([0, x_end], [0, y_end], 'black', 
                    linewidth=linewidth, alpha=0.4)
         
@@ -102,7 +102,7 @@ def draw_concentric_circles():
             x = text_radius * np.cos(angle)
             y = text_radius * np.sin(angle)
             
-            fontsize = 10 if circle_idx == 0 else (8 if circle_idx < 7 else 6)
+            fontsize = 10 #if circle_idx == 0 else (8 if circle_idx < 7 else 6)
             
             ax.text(x, y, str(current_number), 
                    ha='center', va='center', 
