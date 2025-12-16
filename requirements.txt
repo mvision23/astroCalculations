@@ -1,0 +1,7 @@
+DateTime==5.5
+ephem==4.2
+pytz==2025.1
+setuptools==75.8.2
+zope.interface==7.2
+numpy=2.3.1
+matplotlib=3.10.3
