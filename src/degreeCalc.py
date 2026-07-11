@@ -146,7 +146,7 @@ def find_planetary_aspects(planet1_name, planet2_name, year):
     end_date = datetime.date(year + 1, 1, 1)
     current_date = start_date
     aspects = []
-    orb = 1.0  # Orb of 1 degree
+    orb = 0.3  # Orb of 1 degree
     valid_planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
                     'Saturn', 'Uranus', 'Neptune', 'Pluto']
 
