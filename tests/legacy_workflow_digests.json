@@ -1,0 +1,30 @@
+{
+  "monthly_body": {
+    "count": 10,
+    "sha256": "f247d23d7f792aa9c33583069464db1cd4036b872ceea34716625f38e46f4eec"
+  },
+  "repeating": {
+    "count": 123,
+    "sha256": "77ec6abaec19f661b9aa67f8db56003432811f3c5f3bcc3125800554e78c6b01"
+  },
+  "repeating_dates": {
+    "count": 24,
+    "sha256": "25b80fc017b8effefdf492c18cf188e4d9729507ccfd6d5dab1432fa184a05dd"
+  },
+  "multiple_dates": {
+    "count": 24,
+    "sha256": "843e65d6e17197d2d9373f3220b7926495beab374793d46cd49d6a12b89ee1ba"
+  },
+  "zero": {
+    "count": 145,
+    "sha256": "ddfc598aee93b1ec6fa139387c6291946cd82b17c60ff8528e29d054e9e55374"
+  },
+  "alignments": {
+    "count": 573,
+    "sha256": "2133f7524c0b73107a1d1322b1380b8a05c598edb4319e5153935666be4a225f"
+  },
+  "monthly_all": {
+    "count": 142,
+    "sha256": "7f5f4e4ccec0449c576701c74a8479f37740b871a888df7e241ab9f421d86c59"
+  }
+}

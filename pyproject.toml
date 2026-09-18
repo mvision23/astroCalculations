@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "astrocalc"
+version = "1.0.0"
+description = "Keyboard-first astronomy calculation and export terminal"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["ephem==4.2", "textual>=8,<9", "tzdata>=2025.1"]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pytest-asyncio>=0.24"]
+cycles = ["numpy>=2.3", "matplotlib>=3.10", "PyQt5>=5.15"]
+
+[project.scripts]
+astrocalc = "astrocalc.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["astrocalc*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
