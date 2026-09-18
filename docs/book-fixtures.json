@@ -1,0 +1,721 @@
+{
+  "source": {
+    "title": "Universal Clock, Book I",
+    "author": "Jeanne Long",
+    "year": 1993,
+    "pdf_pages": 142,
+    "page_offset": 3,
+    "provenance": "User-provided scans; selected numeric transcription; source charts are not complete OHLC data"
+  },
+  "saturn_1992": {
+    "printed": 68,
+    "pdf": 71,
+    "figure": "Figure 19 / Saturn monthly table",
+    "time": "00:00 UTC on first day; ephemeris convention",
+    "values": [
+      [
+        "1992-01-01",
+        305.85,
+        306
+      ],
+      [
+        "1992-02-01",
+        309.48333333333335,
+        309
+      ],
+      [
+        "1992-03-01",
+        312.85,
+        313
+      ],
+      [
+        "1992-04-01",
+        315.9166666666667,
+        316
+      ],
+      [
+        "1992-05-01",
+        317.8666666666667,
+        318
+      ],
+      [
+        "1992-06-01",
+        318.46666666666664,
+        318
+      ],
+      [
+        "1992-07-01",
+        317.6166666666667,
+        318
+      ],
+      [
+        "1992-08-01",
+        315.6,
+        316
+      ]
+    ],
+    "tolerance_degrees": 0.04
+  },
+  "march_1993_positions": {
+    "printed": 128,
+    "pdf": 131,
+    "date": "1993-03-22",
+    "time": "00:00 UTC",
+    "values": {
+      "Sun": 1.3666666666666667,
+      "Mercury": 340.3,
+      "Venus": 17.716666666666665,
+      "Mars": 104.88333333333334,
+      "Jupiter": 190.88333333333333,
+      "Saturn": 325.5833333333333,
+      "Uranus": 291.6666666666667,
+      "Neptune": 290.8666666666667,
+      "Pluto": 235.36666666666667
+    },
+    "tolerance_degrees": 0.04,
+    "ambiguity": "Neptune sign-degree line is faint: appears 21 in low-resolution scan, while rounded column 291 and ephemeris support 20\u00b052\u2032. Preserve this ambiguity."
+  },
+  "conjunction_1993": {
+    "printed": [
+      4,
+      12
+    ],
+    "pdf": [
+      7,
+      15
+    ],
+    "superior_date": "1993-01-23",
+    "superior_gmt": "15:43",
+    "inferior_book_date": "1993-03-08",
+    "note": "Inferior event is March 9 UTC and March 8 in New York; do not force UTC date to match book label"
+  },
+  "book_band_sequence": {
+    "printed": 109,
+    "pdf": 112,
+    "bands": [
+      [
+        0,
+        1
+      ],
+      [
+        24,
+        25
+      ],
+      [
+        48,
+        49
+      ],
+      [
+        72,
+        73
+      ],
+      [
+        96,
+        97
+      ],
+      [
+        120,
+        121
+      ],
+      [
+        144,
+        145
+      ],
+      [
+        168,
+        169
+      ],
+      [
+        192,
+        193
+      ],
+      [
+        216,
+        217
+      ],
+      [
+        240,
+        241
+      ],
+      [
+        264,
+        265
+      ],
+      [
+        288,
+        289
+      ],
+      [
+        312,
+        313
+      ],
+      [
+        336,
+        337
+      ]
+    ],
+    "legacy_difference": "Legacy special list remains unchanged"
+  },
+  "pound_halfway": {
+    "printed": [
+      90,
+      91
+    ],
+    "pdf": [
+      93,
+      94
+    ],
+    "figure": "Chart 16D",
+    "bands": [
+      [
+        1.62,
+        1.63
+      ],
+      [
+        1.68,
+        1.69
+      ]
+    ],
+    "halfway": 1.655,
+    "support": [
+      1.655,
+      1.68
+    ],
+    "resistance": [
+      1.63,
+      1.655
+    ],
+    "classification": "midpoint of gap formalization of diagram; dotted values not numerically printed"
+  },
+  "static_examples": {
+    "pound": [
+      [
+        1.44,
+        1.45
+      ],
+      [
+        1.68,
+        1.69
+      ],
+      [
+        1.92,
+        1.93
+      ]
+    ],
+    "dow": [
+      [
+        3360,
+        3370
+      ]
+    ],
+    "oil": [
+      [
+        19.2,
+        19.3
+      ],
+      [
+        21.6,
+        21.7
+      ]
+    ],
+    "printed": [
+      91,
+      100,
+      103
+    ],
+    "pdf": [
+      94,
+      103,
+      106
+    ]
+  },
+  "sugar_jupiter": {
+    "printed": [
+      128,
+      131,
+      133
+    ],
+    "pdf": [
+      131,
+      134,
+      136
+    ],
+    "longitude": 191,
+    "unit": 0.1,
+    "level": 11.9,
+    "opposite": 13.1
+  },
+  "clock_phase_cluster": {
+    "printed": 85,
+    "pdf": 88,
+    "rounded_longitudes": [
+      98,
+      194,
+      290
+    ],
+    "phase": 2
+  },
+  "wheel_ranges": {
+    "printed": [
+      47,
+      48
+    ],
+    "pdf": [
+      50,
+      51
+    ],
+    "soybean_overlap": [
+      [
+        539,
+        554
+      ],
+      [
+        544,
+        549
+      ]
+    ],
+    "soybean_shifted": [
+      [
+        599,
+        609
+      ],
+      [
+        557,
+        565
+      ]
+    ],
+    "note": "Figure 8 rounded range differs from earlier Chapter 1 prose 540\u2013553"
+  },
+  "sp_trines": {
+    "printed": [
+      54,
+      56
+    ],
+    "pdf": [
+      57,
+      59
+    ],
+    "ranges": [
+      [
+        "1990-12-05",
+        332.5,
+        338
+      ],
+      [
+        "1991-03-24",
+        370,
+        374.5
+      ],
+      [
+        "1991-03-24",
+        379,
+        382.5
+      ],
+      [
+        "1992-01-05",
+        418,
+        422
+      ]
+    ],
+    "shift": 36,
+    "note": "Different futures contracts on consecutive examples: June 1991 vs March 1992; do not merge into continuous prices"
+  },
+  "dow_trines": {
+    "printed": 61,
+    "pdf": 64,
+    "ranges": [
+      [
+        "1987-08-23",
+        2678,
+        2730
+      ],
+      [
+        "1987-12-12",
+        1838,
+        1889
+      ],
+      [
+        "1988-09-28",
+        2070,
+        2096
+      ],
+      [
+        "1989-01-16",
+        2215,
+        2236
+      ],
+      [
+        "1989-11-03",
+        2612,
+        2650
+      ],
+      [
+        "1990-02-19",
+        2579,
+        2619
+      ],
+      [
+        "1990-12-05",
+        2558,
+        2615
+      ],
+      [
+        "1991-03-24",
+        2837,
+        2897
+      ],
+      [
+        "1992-01-05",
+        3166,
+        3230
+      ],
+      [
+        "1992-04-24",
+        3305,
+        3381
+      ],
+      [
+        "1993-02-03",
+        3325,
+        3400
+      ]
+    ],
+    "note": "Book event-date labels, including weekends; nearest actual session is not specified for every row. Price figures printed in units of one, wheel price labels round to nearest 10 with exact 5-point ties downward (2678\u21922680; 2215\u21922210)."
+  },
+  "october_1987": {
+    "printed": [
+      118,
+      119,
+      120,
+      121
+    ],
+    "pdf": [
+      121,
+      122,
+      123,
+      124
+    ],
+    "claims": [
+      {
+        "body": "Uranus",
+        "start": "1987-01-01",
+        "end": "1987-12-31",
+        "type": "near 24-line; qualitative"
+      },
+      {
+        "body": "Jupiter",
+        "start": "1987-10-09",
+        "end": "1987-10-23",
+        "type": "24-line"
+      },
+      {
+        "body": "Venus",
+        "date": "1987-10-15",
+        "type": "24-line arrival"
+      },
+      {
+        "body": "Mars/Saturn",
+        "date": "1987-10-16",
+        "type": "same wheel segment"
+      }
+    ],
+    "note": "Compare calculated continuous bands and rounded clock sectors; source labels are dates and rounded occupancy interpretations, not exact UTC boundaries"
+  },
+  "december_1993": {
+    "printed": 125,
+    "pdf": 128,
+    "figure": "Table for planets on 24-lines",
+    "bands": [
+      [
+        "Venus",
+        2,
+        4
+      ],
+      [
+        "Uranus",
+        1,
+        2
+      ],
+      [
+        "Mercury",
+        7,
+        9
+      ],
+      [
+        "Mars",
+        11,
+        14
+      ],
+      [
+        "Jupiter",
+        9,
+        15
+      ],
+      [
+        "Sun",
+        14,
+        17
+      ],
+      [
+        "Neptune",
+        1,
+        19
+      ],
+      [
+        "Mercury",
+        22,
+        24
+      ],
+      [
+        "Venus",
+        22,
+        24
+      ]
+    ],
+    "note": "Hand-drawn arrow endpoints approximate \u00b11\u20132 days; circles mark combinations, not extra daily events; asterisks indicate Mars/Saturn matches"
+  },
+  "sugar_daily": {
+    "printed": [
+      127,
+      130,
+      131,
+      134
+    ],
+    "pdf": [
+      130,
+      133,
+      134,
+      137
+    ],
+    "ranges": [
+      [
+        "1993-03-17",
+        11.4,
+        11.75
+      ],
+      [
+        "1993-03-18",
+        12.0,
+        12.7
+      ],
+      [
+        "1993-03-22",
+        12.3,
+        13.0
+      ],
+      [
+        "1993-03-23",
+        12.15,
+        12.4
+      ],
+      [
+        "1993-03-24",
+        11.85,
+        12.15
+      ],
+      [
+        "1993-03-25",
+        11.75,
+        12.25
+      ],
+      [
+        "1993-04-19",
+        11.2,
+        11.7
+      ]
+    ],
+    "observations": [
+      [
+        "1993-03-22",
+        "Mercury turns direct; Jupiter opposite and Uranus/Neptune candidate areas"
+      ],
+      [
+        "1993-03-24",
+        "Jupiter contacted; prose says price remains near it through March 26"
+      ],
+      [
+        "1993-03-29",
+        "Uranus/Neptune region mentioned"
+      ],
+      [
+        "1993-04-05",
+        "Mercury near 17\u00b0 Pisces; Jupiter and its opposite remain candidates"
+      ],
+      [
+        "1993-04-08",
+        "Mars/Saturn clock alignment; Jupiter/opposite candidates"
+      ],
+      [
+        "1993-04-15",
+        "Mercury/Sun near the 24-line"
+      ],
+      [
+        "1993-04-19",
+        "Mars passes the Jupiter clock phase; prose describes the opposite side of its wheel position"
+      ]
+    ],
+    "note": "Selected LOW/HIGH only. No open, close or volume transcribed; no invented full history."
+  },
+  "channel_examples": [
+    {
+      "asset": "Dow",
+      "bodies": [
+        "Saturn"
+      ],
+      "printed": 68,
+      "pdf": 71,
+      "figure": "Charts 11A\u201311D"
+    },
+    {
+      "asset": "British pound",
+      "bodies": [
+        "Saturn"
+      ],
+      "printed": 75,
+      "pdf": 78,
+      "figure": "Charts 12A\u201312C"
+    },
+    {
+      "asset": "Deutsche Mark",
+      "bodies": [
+        "Neptune"
+      ],
+      "printed": 79,
+      "pdf": 82,
+      "figure": "Chart 13A"
+    },
+    {
+      "asset": "Silver",
+      "bodies": [
+        "Saturn",
+        "Uranus",
+        "Neptune"
+      ],
+      "printed": 79,
+      "pdf": 82,
+      "figure": "Chart 13B"
+    },
+    {
+      "asset": "Crude oil",
+      "bodies": [
+        "Saturn",
+        "Jupiter"
+      ],
+      "printed": 82,
+      "pdf": 85,
+      "figure": "Chart 14A"
+    },
+    {
+      "asset": "Sugar",
+      "bodies": [
+        "Pluto"
+      ],
+      "printed": 83,
+      "pdf": 86,
+      "figure": "Charts 14B\u201314C"
+    }
+  ],
+  "dow_30_point_example": {
+    "printed": 71,
+    "pdf": 74,
+    "threshold_points": 30,
+    "interpretation": "Example-specific close beyond Saturn line, not universal contact tolerance"
+  },
+  "asset_pairs": {
+    "printed": "17\u201337",
+    "pdf": "20\u201340",
+    "note": "Editable historical pair presets in methods.PRESETS"
+  },
+  "sequence_examples": {
+    "printed": "18\u201322,29",
+    "pdf": "21\u201325,32",
+    "note": "Manual choice after viewing 6\u20137 dates; no causal unique segmentation supplied"
+  },
+  "previous_price_areas": {
+    "printed": 38,
+    "pdf": 41,
+    "note": "Manual historical comparison sketch; no numeric fixture invented"
+  },
+  "second_test_gap": {
+    "printed": 93,
+    "pdf": 96,
+    "note": "Chart 16E: Dec 5 second test, Dec 6 gap; Feb 7 second test, Feb 11 gap. Full OHLC absent; synthetic causal state-machine tests separate."
+  },
+  "scale_examples": {
+    "printed": 50,
+    "pdf": 53,
+    "cycles": [
+      6,
+      12,
+      24,
+      240
+    ],
+    "note": "Historical choices depend on market quotes, not modern-market defaults"
+  },
+  "weekend_window": {
+    "printed": 9,
+    "pdf": 12,
+    "note": "Saturday: inspect Friday; Sunday: inspect Monday. Either surrounding session may overlap. Strict and expanded results separate."
+  },
+  "interpolation": {
+    "classification": "extension",
+    "note": "Measured against local provider at independent points, not book validation"
+  },
+  "moon_boundary": {
+    "printed": 79,
+    "pdf": 82,
+    "note": "Lunar techniques excluded from Book I"
+  },
+  "anchor": {
+    "classification": "extension",
+    "formula": "P0+u(L-L0+24k)"
+  },
+  "sp_trines_june_1991": {
+    "printed": [
+      54,
+      56
+    ],
+    "pdf": [
+      57,
+      59
+    ],
+    "ranges": [
+      [
+        "1990-12-05",
+        332.5,
+        338
+      ],
+      [
+        "1991-03-24",
+        370,
+        374.5
+      ]
+    ],
+    "shift": 36,
+    "note": "Different futures contracts on consecutive examples: June 1991 vs March 1992; do not merge into continuous prices"
+  },
+  "sp_trines_march_1992": {
+    "printed": [
+      54,
+      56
+    ],
+    "pdf": [
+      57,
+      59
+    ],
+    "ranges": [
+      [
+        "1991-03-24",
+        379,
+        382.5
+      ],
+      [
+        "1992-01-05",
+        418,
+        422
+      ]
+    ],
+    "shift": 36,
+    "note": "Different futures contracts on consecutive examples: June 1991 vs March 1992; do not merge into continuous prices"
+  }
+}

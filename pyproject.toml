@@ -13,9 +13,15 @@ dependencies = ["ephem==4.2", "textual>=8,<9", "tzdata>=2025.1"]
 [project.optional-dependencies]
 test = ["pytest>=8", "pytest-asyncio>=0.24"]
 cycles = ["numpy>=2.3", "matplotlib>=3.10", "PyQt5>=5.15"]
+clock = ["numpy>=2,<3", "pandas>=2.2,<3", "streamlit>=1.50,<2", "plotly>=6,<7"]
+images = ["kaleido>=1.0,<2"]
 
 [project.scripts]
 astrocalc = "astrocalc.__main__:main"
+universal-clock = "astrocalc.universal.cli:main"
+
+[tool.setuptools.package-data]
+"astrocalc.universal" = ["*.json"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

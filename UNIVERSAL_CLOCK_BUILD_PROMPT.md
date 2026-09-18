@@ -1,6 +1,6 @@
 # Development prompt: Universal Clock research and visualization
 
-Build a complete local application implementing the calculable methods in Jeanne Long's *Universal Clock: Forecasting Time and Price in the Footsteps of W. D. Gann*, Book I (1993), together with a working Pine Script alternative for visualizing planetary trajectories and price levels in TradingView. Implement, test, and document the software; do not stop at an architecture proposal or code skeleton.
+Build a complete local application implementing the calculable methods in Jeanne Long's *Universal Clock: Forecasting Time and Price in the Footsteps of W. D. Gann*, Book I (1993), together with a working Pine Script alternative that uses locally generated ephemeris data to visualize planetary trajectories and price levels in TradingView. Implement, test, and document the software; do not stop at an architecture proposal or code skeleton.
 
 The primary source is the user-provided file:
 
@@ -194,9 +194,9 @@ Export positions, events, levels, matches, and settings as CSV/JSON; export a se
 
 ## 7. TradingView alternative: runnable Pine Script v6
 
-Deliver actual `.pine` indicators and a Python exporter that generates them from the same astronomy and transformation engine. Do not deliver placeholders, invented functions, or an instruction to call Python from Pine.
+Deliver actual `.pine` indicators and a Python exporter that generates them from the same astronomy and transformation engine. The selected architecture is generated ephemeris: Python calculates planetary positions and astronomical events locally; Pine reads the embedded results, interpolates positions, applies price transformations, and renders charts and alerts. All planetary positions used by Pine must come from the generated dataset. Do not implement a separate native Pine astronomy engine or an analytical fallback. Do not deliver placeholders, invented functions, or an instruction to call Python from Pine.
 
-### Required approach: embedded ephemeris generated locally
+### Embedded ephemeris generation and use
 
 The local application accepts bodies, start/end, future horizon, coordinate mode, sampling/error target, rounding, and scale, then emits a self-contained script with a finite ephemeris and event dataset embedded in its source. The user pastes it into TradingView's Pine Editor and adds it to the chart. Regenerating the file extends coverage.
 
@@ -213,10 +213,6 @@ Budget source size, compilation complexity, arrays, loop/runtime work, plot coun
 Use global `plot()` calls for historical series. For future curves use bounded time-positioned drawing objects, such as `chart.point.from_time` with `polyline.new` and `xloc.bar_time`, following [TradingView drawing documentation](https://www.tradingview.com/pine-script-docs/visuals/lines-and-boxes/). Manage object lifetimes and redraw work explicitly. Future astronomy is computable, but future market OHLC is unknown. Do not represent the curve as a future candle forecast.
 
 Preserve curve identity and avoid wrap bridges. Make scale, channel selection, color, line style, supported display modes, and event visibility adjustable. Use confirmed bars for price-contact alerts. Replaying history must not move a price-dependent signal to a time before its inputs were available. An ephemeris table containing future astronomical positions is acceptable; future observed asset prices are not.
-
-### Optional second approach: fully native astronomy
-
-Only if feasible within measured Pine limits, offer a standalone analytical astronomy variant that computes positions from time. Cite the actual algorithms and coefficients, give supported bodies and dates, and measure maximum/RMS angular and price-level errors against the local backend. Do not substitute constant average orbital speeds or a sine wave for geocentric ephemerides. Pluto and the Moon may require separate models. Label any approximation and unsupported bodies; this optional route must not delay the required generated-ephemeris deliverable.
 
 Provide a local/Pine capability table for every book method: implemented calculation, embedded/precomputed display, manual interpretation, or unsupported feature with reason. Local method coverage must remain complete even when a Pine feature is restricted to precomputed events or levels.
 
@@ -243,7 +239,7 @@ Deliver:
 
 - The working local application and CLI, integrated without breaking existing functionality.
 - `docs/book-methods.md`, a method registry, assumptions/discrepancy log, and book fixture catalogue.
-- Runnable Pine v6 files, the ephemeris exporter, and a TradingView installation/verification guide.
+- Runnable Pine v6 files with embedded generated ephemeris data, the Python ephemeris exporter, and a TradingView installation/verification guide explaining how to regenerate and replace scripts to extend date coverage.
 - Sample datasets, saved configurations, and reproducible chart examples.
 - Installation/offline setup, calculation conventions, data schema, supported dates, and local/Pine capability documentation.
 - Test results and an honest list of remaining source ambiguities or platform limitations.

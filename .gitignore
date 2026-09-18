@@ -1,5 +1,6 @@
 venv/
 *csv
+!samples/*.csv
 .venv/
 __pycache__/
 .pytest_cache/

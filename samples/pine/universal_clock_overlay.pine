@@ -1,0 +1,183 @@
+//@version=6
+// Generated locally. {"software":"AstroCalc Universal Clock","version":"1.0.0","astronomy":{"provider":"PyEphem","backend_version":"4.2","mode":"apparent_of_date","origin":"geocentric","zodiac":"tropical","epoch":"of date","convention":"apparent RA/Dec transformed to ecliptic of date","time_scale":"UTC input; PyEphem internal dynamical time / delta-T","supported_dates":"1900-01-01 through 2100-12-31 UTC","accuracy":"Backend accuracy is not the event solver time tolerance; see docs/universal-clock.md","downloads":false},"input_checksum":null,"data_report":null,"synthetic":false,"source_method_ids":["UC02-ASP","UC05-CHANNEL","UC06-AREA","UC06-DIV","UC06-HALF","UC07-BAND","UC07-MATCH","UC08-REPLAY"],"numerical_tolerance_seconds":1.0,"export_version":1,"coverage_start":730166400000,"coverage_end":736128000000,"knots":435,"plot_budget":21,"interpolation":[{"body":"Jupiter","max_error_degrees":0.00032974512865280303,"rms_error_degrees":0.00014750087902666738,"smooth_price_error":3.297451286528031e-05,"max_step_hours":24.0,"stations":0},{"body":"Mercury","max_error_degrees":0.0006499539176729741,"rms_error_degrees":0.0002353397286787454,"smooth_price_error":6.49953917672974e-05,"max_step_hours":12.0,"stations":2}],"rounding_caveat":"Book rounding can differ by one wheel unit near half-degree thresholds despite small angular error."}
+indicator("Universal Clock — price", overlay=true, max_polylines_count=50, max_lines_count=450, max_labels_count=450)
+int epoch = 730166400000
+int coverageStart = 730166400000
+int coverageEnd = 736128000000
+float units = input.float(0.1, "Quoted units per wheel step", minval=0.000000001)
+bool bookRound = input.bool(true, "Nearest degree (half up)")
+float anchorPrice = 0.0
+float anchorLongitude = 0.0
+bool showEvents = input.bool(true, "Embedded exact astronomical events")
+bool showFuture = input.bool(true, "Future astronomical trajectories")
+bool showOpposite = input.bool(true, "Opposite / midpoint channels")
+string styleChoice = input.string("Dashed", "Future line style", options=["Solid", "Dashed", "Dotted"])
+string futureStyle = styleChoice == "Solid" ? line.style_solid : styleChoice == "Dotted" ? line.style_dotted : line.style_dashed
+
+f_load(string encoded) =>
+    array<float> values = array.new_float()
+    for item in str.split(encoded, ",")
+        array.push(values, str.tonumber(item))
+    values
+f_upper(array<float> xs, float t) =>
+    int lo = 0
+    int hi = array.size(xs)
+    while lo < hi
+        int mid = int(math.floor((lo + hi) / 2))
+        if array.get(xs, mid) <= t
+            lo := mid + 1
+        else
+            hi := mid
+    lo
+f_lookup(array<float> ts, array<float> ls, int stamp) =>
+    float t = (stamp - epoch) / 1000.0
+    float value = na
+    int n = array.size(ts)
+    if t >= array.get(ts, 0) and t <= array.get(ts, n - 1)
+        int i = math.min(math.max(f_upper(ts, t) - 1, 0), n - 2)
+        float a = array.get(ts, i)
+        float b = array.get(ts, i + 1)
+        value := array.get(ls, i) + (t - a) / (b - a) * (array.get(ls, i + 1) - array.get(ls, i))
+    value
+f_mod(float x, float p) =>
+    ((x % p) + p) % p
+f_price(float longitude, int k, bool opposite) =>
+    float l = bookRound ? math.floor(longitude + 0.5) : longitude
+    anchorPrice + units * (l - anchorLongitude + 24 * k + (opposite ? 12 : 0))
+f_curve(array<float> ts, array<float> ls, int k, bool opposite, color c) =>
+    array<chart.point> pts = array.new<chart.point>()
+    int begin = math.max(time, coverageStart)
+    float current = f_lookup(ts, ls, begin)
+    if not na(current)
+        array.push(pts, chart.point.from_time(begin, f_price(current, k, opposite)))
+    int first = f_upper(ts, (begin - epoch) / 1000.0)
+    if first < array.size(ts)
+        for i = first to array.size(ts) - 1
+            int stamp = epoch + int(array.get(ts, i) * 1000)
+            if stamp <= coverageEnd
+                float longitude = array.get(ls, i)
+                // Add every half-degree rounding boundary on this linear segment.
+                if bookRound and i > 0
+                    int oldStamp = epoch + int(array.get(ts, i - 1) * 1000)
+                    float oldL = array.get(ls, i - 1)
+                    float newL = longitude
+                    int count = int(math.abs(math.floor(newL + 0.5) - math.floor(oldL + 0.5)))
+                    if count > 0
+                        for j = 1 to count
+                            float boundary = newL > oldL ? math.floor(oldL + 0.5) + j - 0.5 : math.floor(oldL + 0.5) - j + 0.5
+                            int jumpTime = oldStamp + int((stamp - oldStamp) * (boundary - oldL) / (newL - oldL))
+                            if jumpTime > begin
+                                float before = boundary + (newL > oldL ? -0.000001 : 0.000001)
+                                float after = boundary + (newL > oldL ? 0.000001 : -0.000001)
+                                array.push(pts, chart.point.from_time(jumpTime, f_price(before, k, opposite)))
+                                array.push(pts, chart.point.from_time(jumpTime, f_price(after, k, opposite)))
+                array.push(pts, chart.point.from_time(stamp, f_price(longitude, k, opposite)))
+    if array.size(pts) >= 2 and array.size(pts) < 9500
+        polyline.new(pts, xloc=xloc.bar_time, line_color=c, line_style=futureStyle, line_width=1)
+
+var array<float> t0 = array.new_float()
+if barstate.isfirst
+    array.concat(t0, f_load("0.000,86400.000,172800.000,259200.000,345600.000,432000.000,518400.000,604800.000,691200.000,777600.000,864000.000,950400.000,1036800.000,1123200.000,1209600.000,1296000.000,1382400.000,1468800.000,1555200.000,1641600.000,1728000.000,1814400.000,1900800.000,1987200.000,2073600.000,2160000.000,2246400.000,2332800.000,2419200.000,2505600.000,2592000.000,2678400.000,2764800.000,2851200.000,2937600.000,3024000.000,3110400.000,3196800.000,3283200.000,3369600.000,3456000.000,3542400.000,3628800.000,3715200.000,3801600.000,3888000.000,3974400.000,4060800.000,4147200.000,4233600.000,4320000.000,4406400.000,4492800.000,4579200.000,4665600.000,4752000.000,4838400.000,4924800.000,5011200.000,5097600.000,5184000.000,5270400.000,5356800.000,5443200.000,5529600.000,5616000.000,5702400.000,5788800.000,5875200.000,5961600.000"))
+var array<float> l0 = array.new_float()
+if barstate.isfirst
+    array.concat(l0, f_load("193.937193727,193.868101859,193.796216920,193.721586301,193.644260618,193.564293212,193.481739684,193.396657413,193.309104976,193.219141465,193.126825820,193.032216269,192.935370021,192.836343584,192.735194179,192.631982188,192.526773504,192.419640089,192.310657953,192.199903595,192.087451127,191.973371700,191.857735104,191.740612098,191.622076195,191.502204537,191.381078142,191.258781832,191.135403926,191.011035748,190.885771069,190.759705588,190.632936391,190.505561357,190.377678503,190.249385316,190.120778079,189.991951221,189.862996815,189.734004366,189.605061011,189.476252254,189.347663346,189.219381085,189.091495201,188.964098155,188.837282885,188.711139502,188.585752907,188.461202751,188.337565486,188.214917004,188.093334434,187.972896751,187.853684626,187.735780010,187.619265595,187.504224177,187.390738019,187.278888322,187.168754749,187.060414869,186.953943470,186.849411851,186.746887237,186.646432418,186.548105705,186.451961322,186.358050273,186.266421576"))
+color c0 = input.color(#ecb34b, "Jupiter color")
+bool enabled0 = input.bool(true, "Show Jupiter")
+float lon0 = f_lookup(t0, l0, time)
+var array<float> t1 = array.new_float()
+if barstate.isfirst
+    array.concat(t1, f_load("0.000,10800.000,21600.000,32400.000,43200.000,54000.000,64800.000,75600.000,86400.000,97200.000,108000.000,118800.000,129600.000,140400.000,151200.000,162000.000,172800.000,183600.000,194400.000,205200.000,216000.000,226800.000,237600.000,248400.000,259200.000,270000.000,280800.000,291600.000,302400.000,313200.000,324000.000,334800.000,345600.000,356400.000,367200.000,378000.000,388800.000,399600.000,410400.000,421200.000,432000.000,442800.000,453600.000,464400.000,475200.000,486000.000,496800.000,507600.000,518400.000,529200.000,540000.000,550800.000,561600.000,572400.000,583200.000,594000.000,604800.000,615103.020,625406.039,635709.059,646012.079,656315.099,666618.118,676921.138,687224.158,691200.000,702000.000,712800.000,723600.000,734400.000,745200.000,756000.000,766800.000,777600.000,788400.000,799200.000,810000.000,820800.000,831600.000,842400.000,853200.000,864000.000,874800.000,885600.000,896400.000,907200.000,918000.000,928800.000,939600.000,950400.000,961200.000,972000.000,982800.000,993600.000,1004400.000,1015200.000,1026000.000,1036800.000,1047600.000,1058400.000,1069200.000,1080000.000,1090800.000,1101600.000,1112400.000,1123200.000,1134000.000,1144800.000,1155600.000,1166400.000,1177200.000,1188000.000,1198800.000,1209600.000,1231200.000,1252800.000,1274400.000,1296000.000,1317600.000,1339200.000,1360800.000,1382400.000,1404000.000,1425600.000,1447200.000,1468800.000,1512000.000,1555200.000,1598400.000,1641600.000,1663200.000,1684800.000,1706400.000,1728000.000,1749600.000,1771200.000,1792800.000,1814400.000,1836000.000,1857600.000,1879200.000,1900800.000,1922400.000,1944000.000,1965600.000,1987200.000,2008800.000,2030400.000,2041200.000,2052000.000,2062800.000,2073600.000,2084400.000,2095200.000,2106000.000,2116800.000,2127600.000,2138400.000,2149200.000,2160000.000,2170800.000,2181600.000,2192400.000,2203200.000,2214000.000,2224800.000,2235600.000,2246400.000,2257200.000,2268000.000,2278800.000,2289600.000,2300400.000,2311200.000,2322000.000,2332800.000,2343600.000,2354400.000,2365200.000,2376000.000,2386800.000,2397600.000,2408400.000,2419200.000,2430000.000,2440800.000,2451600.000,2462400.000,2473200.000,2484000.000,2494800.000,2505600.000,2516400.000,2527200.000,2538000.000,2548800.000,2559600.000,2570400.000,2581200.000,2592000.000,2604356.241,2616712.482,2629068.723,2641424.963,2659912.482,2678400.000,2689200.000,2700000.000,2710800.000,2721600.000,2732400.000,2743200.000,2754000.000,2764800.000,2775600.000,2786400.000,2797200.000,2808000.000,2818800.000,2829600.000,2851200.000,2872800.000,2894400.000,2916000.000,2937600.000,2959200.000,2980800.000,3002400.000,3024000.000,3045600.000,3067200.000,3088800.000,3110400.000,3132000.000,3153600.000,3175200.000,3196800.000,3218400.000,3240000.000,3261600.000,3283200.000,3304800.000,3326400.000,3348000.000,3369600.000,3391200.000,3412800.000,3434400.000,3456000.000,3477600.000,3499200.000,3520800.000,3542400.000,3564000.000,3585600.000,3607200.000,3628800.000,3650400.000,3672000.000,3693600.000,3715200.000,3736800.000,3758400.000,3780000.000,3801600.000,3823200.000,3844800.000,3866400.000,3888000.000,3909600.000,3931200.000,3952800.000,3974400.000,3996000.000,4017600.000,4039200.000,4060800.000,4082400.000,4104000.000,4125600.000,4147200.000,4168800.000,4190400.000,4212000.000,4233600.000,4255200.000,4276800.000,4298400.000,4320000.000,4341600.000,4363200.000,4384800.000,4406400.000,4428000.000,4449600.000,4471200.000,4492800.000,4514400.000,4536000.000,4557600.000,4579200.000,4600800.000,4622400.000,4644000.000,4665600.000,4687200.000,4708800.000,4730400.000,4752000.000,4773600.000,4795200.000,4816800.000,4838400.000,4860000.000,4881600.000,4903200.000,4924800.000,4946400.000,4968000.000,4989600.000,5011200.000,5032800.000,5054400.000,5076000.000,5097600.000,5119200.000,5140800.000,5162400.000,5184000.000,5205600.000,5227200.000,5248800.000,5270400.000,5292000.000,5313600.000,5335200.000,5356800.000,5378400.000,5400000.000,5421600.000,5443200.000,5464800.000,5486400.000,5508000.000,5529600.000,5551200.000,5572800.000,5594400.000,5616000.000,5637600.000,5659200.000,5680800.000,5702400.000,5724000.000,5745600.000,5767200.000,5788800.000,5810400.000,5832000.000,5853600.000,5875200.000,5896800.000,5918400.000,5940000.000,5961600.000"))
+var array<float> l1 = array.new_float()
+if barstate.isfirst
+    array.concat(l1, f_load("349.351342409,349.494456183,349.635820527,349.775413727,349.913214156,350.049200290,350.183350718,350.315644147,350.446059416,350.574575505,350.701171544,350.825826826,350.948520813,351.069233149,351.187943671,351.304632418,351.419279642,351.531865819,351.642371658,351.750778114,351.857066397,351.961217984,352.063214629,352.163038375,352.260671562,352.356096842,352.449297188,352.540255904,352.628956638,352.715383393,352.799520536,352.881352811,352.960865350,353.038043684,353.112873753,353.185341921,353.255434982,353.323140173,353.388445190,353.451338191,353.511807812,353.569843180,353.625433919,353.678570164,353.729242574,353.777442338,353.823161190,353.866391419,353.907125881,353.945358005,353.981081811,354.014291914,354.044983540,354.073152532,354.098795363,354.121909147,354.142491645,354.159766306,354.174735042,354.187397612,354.197754346,354.205806152,354.211554519,354.215001531,354.216149867,354.215979010,354.213791261,354.209087696,354.201873843,354.192155987,354.179941177,354.165237232,354.148052749,354.128397108,354.106280479,354.081713828,354.054708919,354.025278322,353.993435416,353.959194390,353.922570252,353.883578827,353.842236761,353.798561520,353.752571397,353.704285507,353.653723789,353.600907003,353.545856735,353.488595387,353.429146180,353.367533149,353.303781137,353.237915793,353.169963568,353.099951704,353.027908230,352.953861955,352.877842459,352.799880083,352.720005921,352.638251806,352.554650303,352.469234694,352.382038966,352.293097796,352.202446540,352.110121211,352.016158473,351.920595614,351.823470534,351.724821729,351.624688265,351.523109766,351.315778797,351.103156105,350.885576476,350.663381468,350.436918635,350.206540725,349.972604852,349.735471642,349.495504368,349.253068066,349.008528650,348.762252024,348.265945404,347.767041879,347.268379770,346.772716468,346.526843103,346.282704984,346.040614003,345.800873079,345.563775672,345.329605343,345.098635376,344.871128436,344.647336300,344.427499616,344.211847729,344.000598553,343.793958481,343.592122352,343.395273455,343.203583577,343.017213092,342.836311076,342.747954280,342.661015471,342.575510179,342.491453269,342.408858938,342.327740729,342.248111536,342.169983615,342.093368590,342.018277464,341.944720627,341.872707867,341.802248379,341.733350773,341.666023088,341.600272800,341.536106833,341.473531568,341.412552858,341.353176033,341.295405917,341.239246835,341.184702623,341.131776644,341.080471795,341.030790519,340.982734817,340.936306259,340.891505993,340.848334759,340.806792899,340.766880365,340.728596735,340.691941219,340.656912673,340.623509607,340.591730199,340.561572300,340.533033449,340.506110881,340.480801538,340.457102078,340.435008882,340.414518071,340.395625507,340.378326809,340.362617356,340.348492302,340.335946581,340.324974915,340.315571825,340.307731639,340.300671113,340.295639628,340.292627835,340.291626113,340.293859412,340.300536249,340.306478825,340.313918620,340.322848329,340.333260539,340.345147737,340.358502313,340.373316568,340.389582721,340.407292912,340.426439206,340.447013604,340.469008042,340.492414400,340.517224503,340.571023017,340.630337315,340.695100565,340.765245506,340.840704566,340.921409979,341.007293887,341.098288445,341.194325908,341.295338717,341.401259583,341.512021555,341.627558090,341.747803115,341.872691082,342.002157024,342.136136599,342.274566134,342.417382664,342.564523968,342.715928597,342.871535907,343.031286078,343.195120142,343.362979996,343.534808423,343.710549103,343.890146626,344.073546504,344.260695175,344.451540012,344.646029329,344.844112381,345.045739369,345.250861439,345.459430682,345.671400132,345.886723763,346.105356484,346.327254134,346.552373474,346.780672180,347.012108832,347.246642902,347.484234747,347.724845589,347.968437509,348.214973424,348.464417079,348.716733028,348.971886618,349.229843977,349.490571993,349.754038306,350.020211289,350.289060035,350.560554346,350.834664720,351.111362340,351.390619063,351.672407412,351.956700564,352.243472346,352.532697222,352.824350290,353.118407269,353.414844496,353.713638919,354.014768086,354.318210140,354.623943812,354.931948413,355.242203827,355.554690501,355.869389444,356.186282210,356.505350902,356.826578155,357.149947136,357.475441530,357.803045541,358.132743879,358.464521754,358.798364871,359.134259422,359.472192077,359.812149981,360.154120742,360.498092425,360.844053547,361.191993066,361.541900374,361.893765293,362.247578060,362.603329326,362.961010145,363.320611968,363.682126632,364.045546358,364.410863738,364.778071730,365.147163653,365.518133175,365.890974309,366.265681406,366.642249147,367.020672536,367.400946893,367.783067849,368.167031338,368.552833588,368.940471120,369.329940737,369.721239518,370.114364813,370.509314236,370.906085658,371.304677201,371.705087230,372.107314351,372.511357396,372.917215423,373.324887707,373.734373732,374.145673182,374.558785937,374.973712060,375.390451796,375.809005553,376.229373906,376.651557574,377.075557425,377.501374452,377.929009776,378.358464625,378.789740330,379.222838312,379.657760067,380.094507159,380.533081205,380.973483859,381.415716803,381.859781729,382.305680326,382.753414260"))
+color c1 = input.color(#68c4cc, "Mercury color")
+bool enabled1 = input.bool(true, "Show Mercury")
+float lon1 = f_lookup(t1, l1, time)
+bool anyContact = false
+float tolerance = input.float(1.0, "Contact tolerance (chart ticks)", minval=0) * syminfo.mintick
+int k0 = input.int(-3, "Jupiter channel branch 0")
+float p0 = enabled0 and true ? f_price(lon0, k0, false) : na
+plot(p0, "Jupiter channel -3", color=color.new(c0, 0), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p0) and low <= p0 + tolerance and high >= p0 - tolerance)
+int k1 = input.int(-4, "Jupiter opposite branch 1")
+float p1 = enabled0 and showOpposite ? f_price(lon0, k1, true) : na
+plot(p1, "Jupiter opposite -4", color=color.new(c0, 55), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p1) and low <= p1 + tolerance and high >= p1 - tolerance)
+int k2 = input.int(-3, "Jupiter opposite branch 2")
+float p2 = enabled0 and showOpposite ? f_price(lon0, k2, true) : na
+plot(p2, "Jupiter opposite -3", color=color.new(c0, 55), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p2) and low <= p2 + tolerance and high >= p2 - tolerance)
+int k3 = input.int(-11, "Mercury channel branch 3")
+float p3 = enabled1 and true ? f_price(lon1, k3, false) : na
+plot(p3, "Mercury channel -11", color=color.new(c1, 0), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p3) and low <= p3 + tolerance and high >= p3 - tolerance)
+int k4 = input.int(-10, "Mercury channel branch 4")
+float p4 = enabled1 and true ? f_price(lon1, k4, false) : na
+plot(p4, "Mercury channel -10", color=color.new(c1, 0), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p4) and low <= p4 + tolerance and high >= p4 - tolerance)
+int k5 = input.int(-9, "Mercury channel branch 5")
+float p5 = enabled1 and true ? f_price(lon1, k5, false) : na
+plot(p5, "Mercury channel -9", color=color.new(c1, 0), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p5) and low <= p5 + tolerance and high >= p5 - tolerance)
+int k6 = input.int(-11, "Mercury opposite branch 6")
+float p6 = enabled1 and showOpposite ? f_price(lon1, k6, true) : na
+plot(p6, "Mercury opposite -11", color=color.new(c1, 55), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p6) and low <= p6 + tolerance and high >= p6 - tolerance)
+int k7 = input.int(-10, "Mercury opposite branch 7")
+float p7 = enabled1 and showOpposite ? f_price(lon1, k7, true) : na
+plot(p7, "Mercury opposite -10", color=color.new(c1, 55), style=bookRound ? plot.style_stepline : plot.style_linebr)
+anyContact := anyContact or (not na(p7) and low <= p7 + tolerance and high >= p7 - tolerance)
+alertcondition(barstate.isconfirmed and anyContact, "Confirmed price contact", "Completed bar touches an embedded planetary price channel")
+bool staticOn = input.bool(true, "Static divisions A–D")
+int staticCycle = input.int(4, "Static division cycle index")
+static0_0 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 0) : na, "A 0", color=color.new(color.gray, 45), style=plot.style_linebr)
+static0_1 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 1) : na, "A 1", color=color.new(color.gray, 45), style=plot.style_linebr)
+fill(static0_0, static0_1, color=color.new(color.gray, 90), title="A band")
+plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 3.5) : na, "Halfway 0", color=color.new(color.gray, 70), style=plot.style_linebr)
+static1_0 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 6) : na, "B 0", color=color.new(color.gray, 45), style=plot.style_linebr)
+static1_1 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 7) : na, "B 1", color=color.new(color.gray, 45), style=plot.style_linebr)
+fill(static1_0, static1_1, color=color.new(color.gray, 90), title="B band")
+plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 9.5) : na, "Halfway 1", color=color.new(color.gray, 70), style=plot.style_linebr)
+static2_0 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 12) : na, "C 0", color=color.new(color.gray, 45), style=plot.style_linebr)
+static2_1 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 13) : na, "C 1", color=color.new(color.gray, 45), style=plot.style_linebr)
+fill(static2_0, static2_1, color=color.new(color.gray, 90), title="C band")
+plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 15.5) : na, "Halfway 2", color=color.new(color.gray, 70), style=plot.style_linebr)
+static3_0 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 18) : na, "D 0", color=color.new(color.gray, 45), style=plot.style_linebr)
+static3_1 = plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 19) : na, "D 1", color=color.new(color.gray, 45), style=plot.style_linebr)
+fill(static3_0, static3_1, color=color.new(color.gray, 90), title="D band")
+plot(staticOn and time >= coverageStart and time <= coverageEnd ? units * (24 * staticCycle + 21.5) : na, "Halfway 3", color=color.new(color.gray, 70), style=plot.style_linebr)
+if barstate.islast
+    for drawing in polyline.all
+        polyline.delete(drawing)
+    if showFuture and time <= coverageEnd
+        if enabled0 and true
+            f_curve(t0, l0, k0, false, c0)
+        if enabled0 and showOpposite
+            f_curve(t0, l0, k1, true, c0)
+        if enabled0 and showOpposite
+            f_curve(t0, l0, k2, true, c0)
+        if enabled1 and true
+            f_curve(t1, l1, k3, false, c1)
+        if enabled1 and true
+            f_curve(t1, l1, k4, false, c1)
+        if enabled1 and true
+            f_curve(t1, l1, k5, false, c1)
+        if enabled1 and showOpposite
+            f_curve(t1, l1, k6, true, c1)
+        if enabled1 and showOpposite
+            f_curve(t1, l1, k7, true, c1)
+var array<float> eventTimes = f_load("687224158,979361389,1483260095,1794339514,2641424963,4095381555,4720680725,4720680725,4783296204")
+var array<string> eventNames = str.split("station Mercury |24_band_entry Jupiter 0|aspect Mercury/Sun 0|24_band_exit Jupiter 0|station Mercury |clock_alignment Mars/Saturn 0|ingress Mercury 0|24_band_entry Mercury 0|24_band_exit Mercury 0", "|")
+if barstate.islast
+    for mark in line.all
+        line.delete(mark)
+    for tag in label.all
+        label.delete(tag)
+    if showEvents
+        for i = 0 to array.size(eventTimes) - 1
+            int stamp = epoch + int(array.get(eventTimes, i))
+            line.new(stamp, 0, stamp, 1, xloc=xloc.bar_time, extend=extend.both, color=color.new(color.gray, 80), style=line.style_dotted)
+            label.new(stamp, close, array.get(eventNames, i), xloc=xloc.bar_time, style=label.style_label_down, size=size.tiny, color=color.new(color.gray, 85), textcolor=color.gray)
+var table coverage = table.new(position.top_right, 1, 1)
+if barstate.islast
+    table.cell(coverage, 0, 0, "Finite ephemeris: " + str.format_time(coverageStart, "yyyy-MM-dd", "UTC") + " → " + str.format_time(coverageEnd, "yyyy-MM-dd", "UTC") + (time < coverageStart or time > coverageEnd ? "\nOUTSIDE COVERAGE" : "\nUTC / apparent_of_date"), text_color=color.white, bgcolor=color.new(color.black, 20))

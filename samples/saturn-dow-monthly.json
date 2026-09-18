@@ -1,0 +1,69 @@
+{
+  "start": "1992-01-01T00:00:00Z",
+  "end": "1993-01-01T00:00:00Z",
+  "selected": "1992-06-01T00:00:00Z",
+  "bodies": [
+    "Saturn"
+  ],
+  "pair": [
+    "Sun",
+    "Jupiter"
+  ],
+  "coordinate_mode": "apparent_of_date",
+  "scale": {
+    "unit": 10,
+    "rounding": "book",
+    "quote_units": "index points",
+    "anchor_price": 0,
+    "anchor_longitude": 0,
+    "anchored": false
+  },
+  "market": {
+    "timezone": "America/New_York",
+    "timestamp_kind": "daily_label",
+    "bar_convention": "close",
+    "session_open": "09:30",
+    "session_close": "16:00",
+    "calendar": "weekdays",
+    "holidays": [],
+    "tick_size": 0.01,
+    "quote_units": "quoted units",
+    "adjustments": "unspecified",
+    "contract_roll": "unspecified",
+    "symbol": "user data",
+    "synthetic": false,
+    "bar_minutes": 1440
+  },
+  "low": 2400,
+  "high": 3600,
+  "orb": 0.3,
+  "occupancy_mode": "continuous",
+  "clock_alignment_mode": "exact_phase",
+  "step_hours": 24,
+  "future_days": 0,
+  "session_policy": "next",
+  "window_days": 1,
+  "shifts": [
+    0
+  ],
+  "last_family_dates": 3,
+  "comparison_mode": "family",
+  "conjunction_pairs": false,
+  "opposite": true,
+  "halfway": true,
+  "adjoining": true,
+  "monthly_sample": true,
+  "tolerance_seconds": 1.0,
+  "contacts": {
+    "tolerance_ticks": 1,
+    "separation_bars": 3,
+    "congestion_bars": 3,
+    "confirmation_bars": 1,
+    "field": "range"
+  },
+  "sequences": [],
+  "annotations": [],
+  "scale_locked": true,
+  "preset": "Dow",
+  "schema_version": 1
+}

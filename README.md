@@ -5,6 +5,20 @@ A keyboard-driven Python terminal application for the 12 astronomy workflows in
 Calculations use PyEphem; the interface uses Textual. Results can be searched,
 sorted, and exported as plain text or CSV.
 
+An optional **Universal Clock** application adds local Streamlit/Plotly research
+views for Jeanne Long's Book I: planetary events, time/price wheels, historical
+range comparisons, channels, daily replay and generated Pine v6 indicators.
+
+```sh
+python -m pip install -e '.[clock,test]'
+universal-clock ui
+```
+
+Open `http://127.0.0.1:8501`. See the [application guide](docs/universal-clock.md),
+[book-method coverage](docs/book-methods.md), [assumptions](docs/assumptions.md),
+and [TradingView guide](docs/tradingview.md). The terminal application below keeps
+its original conventions. The new graphical dependencies remain optional.
+
 ## Install and launch
 
 Python 3.11 or later is required. From this checkout:
