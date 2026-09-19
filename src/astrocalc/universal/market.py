@@ -48,9 +48,18 @@ class MarketSpec:
         if cl<=op:op-=timedelta(days=1) # date label is closing date for overnight sessions
         return op.astimezone(UTC),cl.astimezone(UTC)
 
+    def session_date(self,t):
+        """Nominal closing-date label, before applying holidays/weekends."""
+        local=instant(t).astimezone(ZoneInfo(self.timezone));d=local.date()
+        # Overnight sessions are labeled by their closing date, including the
+        # 00:00–00:00 calendar-day bars used by continuously traded markets.
+        opens=time.fromisoformat(self.session_open);closes=time.fromisoformat(self.session_close)
+        if (closes<opens and local.time()>closes) or (closes==opens and local.time()>=closes):d+=timedelta(days=1)
+        return d
+
     def assign(self,t,policy='next'):
         if policy not in ('strict','previous','next'):raise ValueError('Invalid session policy')
-        d=instant(t).astimezone(ZoneInfo(self.timezone)).date()
+        d=self.session_date(t)
         if self.is_session(d):return d
         if policy=='strict':return None
         for _ in range(370):
@@ -160,7 +169,7 @@ def session_range(data,d,asof):
 
 def event_ranges(data,event_time,asof,policy='next',window_days=1):
     strict=data.spec.assign(event_time,'strict');assigned=data.spec.assign(event_time,policy)
-    local=instant(event_time).astimezone(ZoneInfo(data.spec.timezone)).date()
+    local=data.spec.session_date(event_time)
     expanded=[]
     for offset in range(-window_days,window_days+1):
         d=local+timedelta(days=offset)

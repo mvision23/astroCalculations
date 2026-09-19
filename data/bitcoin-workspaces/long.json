@@ -1,0 +1,83 @@
+{
+  "start": "2021-07-06T00:00:00+00:00",
+  "end": "2025-07-05T00:00:00+00:00",
+  "selected": "2025-07-05T00:00:00+00:00",
+  "bodies": [
+    "Saturn",
+    "Neptune",
+    "Pluto"
+  ],
+  "pair": [
+    "Saturn",
+    "Neptune"
+  ],
+  "coordinate_mode": "apparent_of_date",
+  "scale": {
+    "unit": 369.0,
+    "rounding": "book",
+    "quote_units": "USD/BTC",
+    "anchor_price": 0,
+    "anchor_longitude": 0,
+    "anchored": false
+  },
+  "market": {
+    "timezone": "UTC",
+    "timestamp_kind": "instant",
+    "bar_convention": "open",
+    "session_open": "00:00",
+    "session_close": "00:00",
+    "calendar": "24/7",
+    "holidays": [],
+    "tick_size": 0.01,
+    "quote_units": "USD/BTC",
+    "adjustments": "Source values unchanged; source adjustment methodology unspecified",
+    "contract_roll": "Spot-style supplied series; exchange/provider unspecified; no futures roll",
+    "symbol": "BTC/USD",
+    "synthetic": false,
+    "bar_minutes": 1440
+  },
+  "column_mapping": {},
+  "price_file": "bitcoin_universal.csv",
+  "low": 6642.0,
+  "high": 121032.0,
+  "orb": 0.3,
+  "occupancy_mode": "continuous",
+  "clock_alignment_mode": "exact_phase",
+  "step_hours": 168,
+  "future_days": 30,
+  "session_policy": "strict",
+  "window_days": 1,
+  "shifts": [
+    0,
+    0.5,
+    1,
+    -0.5,
+    -1
+  ],
+  "last_family_dates": 3,
+  "comparison_mode": "family",
+  "conjunction_pairs": false,
+  "opposite": true,
+  "halfway": true,
+  "adjoining": true,
+  "monthly_sample": false,
+  "tolerance_seconds": 1.0,
+  "contacts": {
+    "tolerance_ticks": 0,
+    "separation_bars": 3,
+    "congestion_bars": 3,
+    "confirmation_bars": 1,
+    "field": "range"
+  },
+  "sequences": [],
+  "annotations": [
+    {
+      "timestamp": "2025-07-05T00:00:00+00:00",
+      "text": "Long research view. Bodies selected on 2019\u20132021 validation, not on test-period fit. These are exploratory candidates; see reports/bitcoin/report.md. Data ends July 2025.",
+      "classification": "research interpretation"
+    }
+  ],
+  "scale_locked": true,
+  "preset": "Bitcoin \u00b7 $369",
+  "schema_version": 1
+}

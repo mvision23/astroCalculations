@@ -19,6 +19,7 @@ class Settings:
     scale: dict = field(default_factory=lambda:asdict(Scale()))
     market: dict = field(default_factory=lambda:asdict(MarketSpec()))
     column_mapping: dict = field(default_factory=dict)
+    price_file: str | None = None
     low: float = 9.
     high: float = 15.
     orb: float = .3
@@ -132,8 +133,9 @@ def calculate(settings,data=None,provider=None,include_events=True):
                     levels.append(dict(timestamp=r['timestamp'],id=f'{body}:{k}:{int(opposite)}',body=body,k=k,opposite=opposite,
                                        low=p,high=p,method='UC05-CHANNEL',longitude=r['longitude'],unwrapped=r['unwrapped']))
     bands=static_bands(scale,settings.low,settings.high,settings.halfway,settings.adjoining)
-    for t in times:
-        for band in bands:levels.append(dict(timestamp=t,**band))
+    # Static divisions are valid intervals, not one duplicate row per candle.
+    # This keeps multiyear market workspaces and their exports bounded in size.
+    for band in bands:levels.append(dict(timestamp=a,valid_from=a,valid_until=horizon,**band))
     matches=compare_events(data,events,scale,instant(settings.selected),settings.session_policy,settings.window_days,settings.shifts,settings.last_family_dates,settings.conjunction_pairs,settings.comparison_mode,settings.sequences) if data is not None else []
     contact_rows=contacts(data,levels,scale,instant(settings.selected),ContactSettings(**settings.contacts)) if data is not None else []
     from . import __version__

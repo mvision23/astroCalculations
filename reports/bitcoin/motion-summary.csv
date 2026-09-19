@@ -1,0 +1,11 @@
+body,net_degrees,net_zodiac_turns,net_clock_turns,clock_drift_days,retrograde_fraction,note
+Sun,4142.7692923277555,11.50769247868821,172.61538718032315,24.348930119476105,0.0,"Net travel in this observed interval, not a measured full orbital period"
+Mercury,4167.08203237969,11.57522786772136,173.62841801582042,24.206866871395658,0.189581351094196,"Net travel in this observed interval, not a measured full orbital period"
+Venus,4083.4913245032044,11.343031456953346,170.14547185430018,24.702391160895154,0.07778306374881065,"Net travel in this observed interval, not a measured full orbital period"
+Mars,2128.4506685198194,5.912362968110609,88.68544452165914,47.39221889983903,0.10347288296860133,"Net travel in this observed interval, not a measured full orbital period"
+Jupiter,349.6085712186309,0.9711349200517525,14.567023800776289,288.5283951946326,0.30280685061845863,"Net travel in this observed interval, not a measured full orbital period"
+Saturn,131.520532198828,0.3653348116634111,5.480022174951166,766.9676993665548,0.3679828734538535,"Net travel in this observed interval, not a measured full orbital period"
+Uranus,51.217752410200376,0.14227153447277882,2.134073017091682,1969.4733808723445,0.3972407231208373,"Net travel in this observed interval, not a measured full orbital period"
+Neptune,28.949017036764758,0.08041393621323543,1.2062090431985315,3484.4706427128176,0.4167459562321599,"Net travel in this observed interval, not a measured full orbital period"
+Pluto,21.79790081364945,0.06054972448235958,0.9082458672353937,4627.601568717837,0.4383920076117983,"Net travel in this observed interval, not a measured full orbital period"
+Moon,55383.32792761621,153.84257757671168,2307.6386636506754,1.821342338471167,0.0,"Net travel in this observed interval, not a measured full orbital period"

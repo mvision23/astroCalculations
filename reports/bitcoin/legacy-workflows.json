@@ -1,0 +1,74 @@
+[
+  {
+    "workflow": "new_moons",
+    "rows": 13,
+    "sampling": "PyEphem next_new_moon; offset / 13.1764 days",
+    "notes": "Derived dates are estimates using constant average lunar motion, not exact angular crossings."
+  },
+  {
+    "workflow": "moon_degree",
+    "rows": 1,
+    "sampling": "Hourly UTC samples from month start",
+    "notes": "First hourly sample in the selected sign with int(degree) equal to the integer bucket; resolution 1 hour, not an exact crossing."
+  },
+  {
+    "workflow": "annual_aspects",
+    "rows": 5,
+    "sampling": "Daily samples at 12:00 UTC",
+    "notes": "Orb <= 0.3 degrees. Counts are matching sample dates, not distinct astronomical events."
+  },
+  {
+    "workflow": "special",
+    "rows": 305,
+    "sampling": "Every 24 hours from 00:00 UTC",
+    "notes": "Strict circular distance < 0.5 degrees. Corrects original linear comparison at 0/360. Targets: 0, 1, 24, 25, 48, 49, 72, 73, 96, 97, 120, 121, 145, 146, 169, 170, 193, 194, 217, 218, 241, 242, 265, 266, 289, 290, 313, 314, 337, 338"
+  },
+  {
+    "workflow": "monthly_body",
+    "rows": 10,
+    "sampling": "Daily samples at 00:00 UTC",
+    "notes": "Orb <= 1.0 degrees. Counts are matching sample dates, not distinct astronomical events."
+  },
+  {
+    "workflow": "repeating",
+    "rows": 123,
+    "sampling": "Daily samples at 00:00 UTC",
+    "notes": "Orb <= 1.0 degrees. Counts are matching sample dates, not distinct astronomical events."
+  },
+  {
+    "workflow": "repeating_dates",
+    "rows": 24,
+    "sampling": "Daily samples at 00:00 UTC",
+    "notes": "Orb <= 1.0 degrees. Counts are matching sample dates, not distinct astronomical events. Choices 7 and 8 select identical dates; both measured separation and nominal aspect angle are retained."
+  },
+  {
+    "workflow": "multiple_dates",
+    "rows": 24,
+    "sampling": "Daily samples at 00:00 UTC",
+    "notes": "Orb <= 1.0 degrees. Counts are matching sample dates, not distinct astronomical events. Choices 7 and 8 select identical dates; both measured separation and nominal aspect angle are retained."
+  },
+  {
+    "workflow": "positions",
+    "rows": 10,
+    "sampling": "Selected date at 00:00 UTC; retrograde compared with 24 hours earlier",
+    "notes": ""
+  },
+  {
+    "workflow": "zero",
+    "rows": 145,
+    "sampling": "Every 6 hours from 00:00 UTC",
+    "notes": "Sampled degree 0\u20130.5 inclusive; first match per body per UTC date, not guaranteed exact ingress. Retrograde compared with 6 hours earlier."
+  },
+  {
+    "workflow": "alignments",
+    "rows": 1235,
+    "sampling": "Every 24 hours from 00:00 UTC",
+    "notes": "Daily groups with >=2 members: int(longitude % 24) or 24 after normalization (0 becomes 360). Remainders [0,1) map to 24; not contiguous sectors. Retrograde compared with 6 hours earlier."
+  },
+  {
+    "workflow": "monthly_all",
+    "rows": 142,
+    "sampling": "Daily samples at 12:00 UTC",
+    "notes": "Pair orb = max(per-body values): Mercury/Mars 3.5, Sun 1, others 2.5 degrees. Counts are matching sample dates, not distinct events."
+  }
+]

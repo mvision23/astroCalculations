@@ -40,6 +40,9 @@ def main(argv=None):
         if args.end:s.end=instant(args.end).isoformat();s.selected=s.end
         if args.bodies:s.bodies=args.bodies
         if args.unit is not None:s.scale['unit']=args.unit
+        if not args.prices and not args.book_ranges and s.price_file:
+            from .bitcoin import local_price_path
+            args.prices=local_price_path(s.price_file)
         if args.prices and args.book_ranges:raise ValueError('Select one price source: --prices or --book-ranges')
         data=load_prices(args.prices.read_bytes(),MarketSpec(**s.market),s.column_mapping,parquet=args.prices.suffix=='.parquet') if args.prices else None
         if args.book_ranges:data=book_ranges(args.book_ranges,MarketSpec(**s.market))

@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "unit": 369.0,
+  "cycle": 8856.0,
+  "opposite": 4428.0,
+  "analysis_start": "2014-01-01",
+  "train_end": "2019-01-01",
+  "validation_end": "2022-01-01",
+  "horizons": {
+    "short": 7,
+    "intermediate": 90,
+    "long": 365
+  },
+  "pivot_half_windows": {
+    "short": 7,
+    "intermediate": 30,
+    "long": 180
+  },
+  "pivot_event_windows": {
+    "short": 2,
+    "intermediate": 7,
+    "long": 30
+  },
+  "ridge_penalty": 10.0,
+  "bootstrap_replicates": 1999,
+  "bootstrap_block": 2,
+  "seed": 369,
+  "minimum_nonoverlap_cases": 20,
+  "holm_family": 30,
+  "selection": "Rank single-body increments by validation MSE skill, then evaluate frozen choices on 2022 onward.",
+  "channel_tolerance_usd": 0.0,
+  "channel_controls": 239,
+  "phase_features": "Longitude and 24-degree phase harmonics, speed, retrograde, band occupancy, closed-price phase relative to direct/opposite ladders.",
+  "caveat": "Observational extension, not a deterministic book rule. Test ranks are descriptive; the validation winner is the preselected candidate."
+}

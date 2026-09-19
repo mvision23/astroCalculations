@@ -1,6 +1,8 @@
 venv/
 *csv
 !samples/*.csv
+!data/bitcoin_universal.csv
+!reports/bitcoin/*.csv
 .venv/
 __pycache__/
 .pytest_cache/

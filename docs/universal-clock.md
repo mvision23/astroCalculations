@@ -38,6 +38,15 @@ not fetch one during calculation. HTML export embeds Plotly and needs no network
 
 ## First exploration
 
+For the supplied Bitcoin dataset, choose a **Bitcoin research view** in the sidebar
+and click **Load Bitcoin · $369**. This restores the local file and its UTC/24-hour
+session convention as well as the scale and planets. The fixed numbered step is
+$369; a complete 24-step cycle is $8,856 and the opposite offset is $4,428.
+The [Bitcoin research report](../reports/bitcoin/report.md) explains the exploratory
+planet selections and their unsuccessful evidence tests. It uses supplied data
+only, ending July 2025. [Data preparation notes](../data/README.md) document quality
+flags and timestamp assumptions.
+
 1. Start without prices. Select bodies, dates and coordinate mode, then Calculate.
    Position spacing controls rendered samples; exact-event searches use their
    own adaptive refinement. Future days extend astronomy beyond the end date.
@@ -58,8 +67,10 @@ not fetch one during calculation. HTML export embeds Plotly and needs no network
    depth, fixed shifts and contact parameters. Select manual event sequences in
    chronological order. Save daily annotations for discretionary planet handoffs.
 7. Export a workspace, result bundle, standalone HTML or image. Reopen the workspace
-   and select the price source again; file bytes and uploads are not hidden inside
-   configuration files. Pine generation is described in [tradingview.md](tradingview.md).
+   and select an uploaded price source again; file bytes and uploads are not hidden
+   inside configuration files. Local datasets can be remembered by the workspace's
+   `price_file`, relative to the checkout's `data` directory. Local file references
+   cannot escape that directory. Pine generation is described in [tradingview.md](tradingview.md).
 
 The price chart's legend toggles individual trajectories. Static bands, events
 and range boxes have separate controls. Candles use authentic supplied OHLC;
@@ -177,6 +188,9 @@ workspace and full JSON results. Metadata accompanies CSV rows and the bundle:
 input SHA256, synthetic flag, source method IDs, provider/version, coordinate mode,
 solver tolerance, scale, rounding, session rules and software version. Nested CSV
 cells use JSON. Standalone HTML includes the same inspectable provenance.
+Static level rows use `valid_from`/`valid_until` once per band rather than duplicating
+the same band on every timestamp. Contacts apply that band to every completed bar
+in its validity interval; planetary branches retain their individual sampled rows.
 
 ## Code and source coverage
 

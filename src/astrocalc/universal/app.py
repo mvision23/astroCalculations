@@ -14,6 +14,7 @@ from astrocalc.universal.plotting import price_chart,astronomy_chart,wheel,calen
 from astrocalc.universal.exports import dumps,bundle,html_chart,csv_text
 from astrocalc.universal.pine import build_tables,generate_pine
 from astrocalc.universal.demo import synthetic_csv
+from astrocalc.universal.bitcoin import data_root,local_price_path,bitcoin_market
 
 st.set_page_config(page_title='Universal Clock · AstroCalc',page_icon='◷',layout='wide')
 st.markdown('''<style>
@@ -27,6 +28,19 @@ s=Settings.from_dict(st.session_state.workspace)
 with st.sidebar:
     st.markdown('### ◷ Universal Clock')
     st.caption('ASTROCALC · LOCAL RESEARCH')
+    bitcoin_workspaces=sorted((data_root()/'bitcoin-workspaces').glob('*.json'))
+    if bitcoin_workspaces:
+        by_name={p.stem:p for p in bitcoin_workspaces}
+        view_name=st.selectbox('Bitcoin research view',list(by_name),index=list(by_name).index('short') if 'short' in by_name else 0)
+        if st.button('Load Bitcoin · $369',type='primary'):
+            try:
+                loaded=Settings.from_dict(json.loads(by_name[view_name].read_text()))
+                st.session_state.workspace=asdict(loaded)
+                for key in ('replay_day','replay_time','price_source'):st.session_state.pop(key,None)
+                st.rerun()
+            except (ValueError,TypeError,OSError) as exc:st.error(str(exc))
+        report_file=data_root().parent/'reports/bitcoin/report.md'
+        if report_file.exists():st.download_button('Bitcoin research findings',report_file.read_text(),'bitcoin-research.md','text/markdown',on_click='ignore')
     workspace_file=st.file_uploader('Reopen workspace',type=['json'],key='workspace_file')
     if workspace_file and st.button('Load workspace'):
         try:
@@ -34,14 +48,16 @@ with st.sidebar:
             st.session_state.workspace=asdict(loaded)
             st.session_state.pop('replay_day',None)
             st.session_state.pop('replay_time',None)
+            st.session_state.pop('price_source',None)
             st.rerun()
         except (ValueError,TypeError) as exc:st.error(str(exc))
-    preset=st.selectbox('Historical example',list(PRESETS),index=list(PRESETS).index(s.preset) if s.preset in PRESETS else 0)
+    preset=st.selectbox('Market / historical example',list(PRESETS),index=list(PRESETS).index(s.preset) if s.preset in PRESETS else 0)
     locked=st.checkbox('Lock price scale',s.scale_locked)
     s.scale_locked=locked
     if st.button('Apply example settings'):
         p=PRESETS[preset];s.preset=preset;s.bodies=p['bodies'];s.pair=p['pair'];s.low=p['low'];s.high=p['high']
         s.scale.update(unit=p['unit'],quote_units=p['quote_units']);s.market.update(quote_units=p['quote_units']);s.conjunction_pairs=preset=='Soybeans'
+        if preset=='Bitcoin · $369':s.market=asdict(bitcoin_market())
         st.session_state.workspace=asdict(s);st.rerun()
     with st.form('parameters'):
         a=st.date_input('Start (UTC)',instant(s.start).date(),min_value=date(1900,1,1),max_value=date(2100,12,31))
@@ -73,7 +89,16 @@ st.info('Astronomical positions are calculations. Market relationships are resea
 if s.horizon_clipped:st.info('Future astronomy ends on 31 December 2100, the last supported UTC date. The requested extra days beyond that date are omitted from charts and Pine exports.')
 
 with st.expander('Price data & market sessions',expanded=False):
-    source=st.radio('Price source',['No prices · astronomy only','Upload CSV / Parquet','Synthetic demonstration','Book transcribed ranges'],horizontal=True)
+    source_options=['No prices · astronomy only','Local dataset','Upload CSV / Parquet','Synthetic demonstration','Book transcribed ranges']
+    source=st.radio('Price source',source_options,index=1 if s.price_file else 0,horizontal=True,key='price_source')
+    local_file=None
+    if source=='Local dataset':
+        candidates=sorted(p.relative_to(data_root()).as_posix() for p in data_root().glob('*') if p.suffix.lower() in ('.csv','.parquet'))
+        if candidates:
+            local_file=st.selectbox('Local price file',candidates,index=candidates.index(s.price_file) if s.price_file in candidates else 0)
+            s.price_file=local_file
+        else:st.info('No CSV/Parquet files found in the local data directory.')
+    else:s.price_file=None
     book_name=st.selectbox('Source range fixture',['sugar_daily','sp_trines_june_1991','sp_trines_march_1992','dow_trines']) if source=='Book transcribed ranges' else None
     uploaded=st.file_uploader('Historical price file',type=['csv','parquet']) if source=='Upload CSV / Parquet' else None
     c1,c2,c3=st.columns(3)
@@ -107,6 +132,11 @@ with st.expander('Price data & market sessions',expanded=False):
             s.column_mapping=mapping
         except Exception as exc:st.error(f'Could not read input: {exc}')
     elif source=='Synthetic demonstration':content=synthetic_csv().encode()
+    elif local_file:
+        try:
+            content=local_price_path(local_file).read_bytes();parquet=local_file.endswith('.parquet');mapping=s.column_mapping
+            if local_file=='bitcoin_universal.csv':st.caption('Supplied BTC/USD history ends 5 July 2025 UTC. Start/End are assumed UTC. Early flat OHLC and zero volume are preserved; see the data audit. Research candidates are not validated forecasting signals.')
+        except (OSError,ValueError) as exc:st.error(str(exc))
     data=None
     try:
         market=MarketSpec(timezone=zone,timestamp_kind=timestamp_kind,bar_convention=convention,session_open=opens,session_close=closes,

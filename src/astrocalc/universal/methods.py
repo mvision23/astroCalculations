@@ -8,6 +8,7 @@ from .market import event_ranges
 from .events import superior_inferior_pairs
 
 PRESETS = {
+    'Bitcoin · $369':dict(pair=['Mercury','Sun'],bodies=['Mercury','Sun','Venus'],unit=369.,quote_units='USD/BTC',low=70000.,high=125000.),
     'Sugar':dict(pair=['Mercury','Sun'],bodies=['Jupiter','Uranus','Neptune','Mercury','Venus','Sun','Mars','Saturn','Pluto'],unit=.1,quote_units='cents/lb',low=9.,high=15.),
     'Dow':dict(pair=['Sun','Jupiter'],bodies=['Saturn'],unit=10.,quote_units='index points',low=2400.,high=3600.),
     'S&P':dict(pair=['Sun','Jupiter'],bodies=['Sun','Jupiter'],unit=1.,quote_units='index points',low=300.,high=480.),
@@ -37,10 +38,13 @@ def compare_events(data,events,scale,asof,policy='next',window_days=1,shifts=(0,
             key=(event.bodies,event.details['family'] if comparison_mode=='family' else 'all families')
             pairs.extend((old,event) for old in families.get(key,[])[-last_n:])
             families.setdefault(key,[]).append(event)
-    rows=[]
+    rows=[];range_cache={}
+    def ranges(t):
+        if t not in range_cache:range_cache[t]=event_ranges(data,t,asof,policy,window_days)
+        return range_cache[t]
     for source,target in pairs:
-        src=event_ranges(data,source.exact,asof,policy,window_days)
-        dst=event_ranges(data,target.exact,asof,policy,window_days)
+        src=ranges(source.exact)
+        dst=ranges(target.exact)
         for shift in shifts:
             s=src['assigned'];d=dst['assigned'];strict=dst['strict']
             price_range=(s['low']+24*scale.unit*shift,s['high']+24*scale.unit*shift) if s else None
@@ -92,11 +96,14 @@ def contacts(data,levels,scale,asof,settings=ContactSettings()):
     if 'close' not in bars:return []
     if settings.field=='range' and not data.ohlc:return []
     tolerance=settings.tolerance_ticks*data.spec.tick_size
-    by_time={}
-    for level in levels:by_time.setdefault(level['timestamp'],[]).append(level)
+    by_time={};static=[]
+    for level in levels:
+        if 'valid_from' in level:static.append(level)
+        else:by_time.setdefault(level['timestamp'],[]).append(level)
     states={};result=[]
     for i,bar in enumerate(bars.to_dict('records')):
-        for level in by_time.get(bar['timestamp'],[]):
+        active_static=[l for l in static if l['valid_from']<=bar['timestamp']<=l['valid_until']]
+        for level in by_time.get(bar['timestamp'],[])+active_static:
             key=level['id'];a=level['low'];b=level['high']
             lo=bar['low'] if settings.field=='range' else bar['close'];hi=bar['high'] if settings.field=='range' else bar['close']
             touch=lo<=b+tolerance and hi>=a-tolerance

@@ -54,10 +54,14 @@ def price_chart(result,data=None,show_static=True,show_events=True,show_ranges=T
                       marker=dict(symbol='triangle-down',size=7,color='#a9b5cc'),text=[f'{e.kind}: {" / ".join(e.bodies)} {e.target}' for e in markers],
                       hovertemplate='%{text}<br>%{x}<extra></extra>'))
     if show_ranges:
+        comparison_shapes=[]
         for r in result.matches:
             if r['eligible'] and r['source_low'] is not None:
-                fig.add_shape(type='rect',x0=r['source_time'],x1=r['target_time'],y0=r['source_low'],y1=r['source_high'],line=dict(width=1,color='#b6a2d9'),fillcolor='rgba(180,155,215,.035)')
-                fig.add_vrect(x0=r['target_time']-timedelta(days=s.window_days),x1=r['target_time']+timedelta(days=s.window_days),fillcolor='#8ba3cb',opacity=.04,line_width=0)
+                comparison_shapes.append(dict(type='rect',x0=r['source_time'],x1=r['target_time'],y0=r['source_low'],y1=r['source_high'],line=dict(width=1,color='#b6a2d9'),fillcolor='rgba(180,155,215,.035)'))
+                comparison_shapes.append(dict(type='rect',x0=r['target_time']-timedelta(days=s.window_days),x1=r['target_time']+timedelta(days=s.window_days),y0=0,y1=1,xref='x',yref='y domain',fillcolor='#8ba3cb',opacity=.04,line=dict(width=0)))
+        # Revalidate the growing shape collection once, rather than for every
+        # historical comparison (quadratic work on multi-year workspaces).
+        fig.update_layout(shapes=list(fig.layout.shapes)+comparison_shapes)
     fig.add_shape(type='line',x0=selected,x1=selected,y0=s.low,y1=s.high,line=dict(color='#eeeeee',width=1,dash='dot'))
     fig.update_layout(xaxis_rangeslider_visible=False,height=650,yaxis_title=s.scale.get('quote_units','price'),yaxis_range=[s.low,s.high],
                       xaxis_range=[instant(s.start),s.horizon])
