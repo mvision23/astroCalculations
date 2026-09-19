@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field, asdict
 import math
 from datetime import timedelta
-from .astronomy import instant, EphemProvider, series, BODIES
+from .astronomy import instant, EphemProvider, series, BODIES, MIN_TIME, MAX_TIME
 from .geometry import Scale, static_bands
 from .events import aspects, body_events, combinations, clock_sectors
 from .methods import compare_events, contacts, level_confluences, ContactSettings
@@ -44,13 +44,22 @@ class Settings:
     preset: str = 'Sugar'
     schema_version: int = 1
 
+    @property
+    def horizon(self):
+        """Effective inclusive endpoint, shared by local plots and Pine exports."""
+        return min(instant(self.end)+timedelta(days=self.future_days),MAX_TIME)
+
+    @property
+    def horizon_clipped(self):
+        return instant(self.end)+timedelta(days=self.future_days)>MAX_TIME
+
     def validate(self):
         a,b=instant(self.start),instant(self.end);instant(self.selected)
-        if not a<b or a.year<1900 or b.year>2100:raise ValueError('Use increasing dates in 1900–2100')
+        if not MIN_TIME<=a<b<=MAX_TIME:raise ValueError('Use increasing dates in 1900–2100')
         if not self.bodies or not set(self.bodies)<=set(BODIES+('Moon',)):raise ValueError('Choose supported bodies')
         if len(self.pair)!=2 or self.pair[0]==self.pair[1] or not set(self.pair)<=set(BODIES+('Moon',)):raise ValueError('Choose two distinct supported bodies')
         if not .25<=self.step_hours<=744 or not 0<=self.future_days<=730:raise ValueError('Invalid sampling/future horizon')
-        if b+timedelta(days=self.future_days)>instant('2100-12-31T23:59:59+00:00'):raise ValueError('Future horizon exceeds 2100')
+        self.selected=max(a,min(instant(self.selected),self.horizon)).isoformat()
         if not all(math.isfinite(v) for v in [self.low,self.high,self.orb,self.step_hours,self.tolerance_seconds,*self.shifts]):raise ValueError('Settings must be finite')
         if not self.low<self.high or not 0<=self.orb<6:raise ValueError('Invalid range/orb')
         if self.tolerance_seconds<.01 or self.window_days<0:raise ValueError('Invalid tolerance/window')
@@ -82,7 +91,7 @@ class ResearchResult:
 def calculate(settings,data=None,provider=None,include_events=True):
     settings.validate();provider=provider or EphemProvider(settings.coordinate_mode)
     a,b=instant(settings.start),instant(settings.end)
-    horizon=b+timedelta(days=settings.future_days)
+    horizon=settings.horizon
     scale=Scale(**settings.scale)
     times=[];t=a
     while t<=horizon:
@@ -108,8 +117,9 @@ def calculate(settings,data=None,provider=None,include_events=True):
             from .astronomy import delta
             for r in rows:
                 t=r['timestamp'];first=t.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
-                next_month=(first.replace(day=28)+timedelta(days=4)).replace(day=1)
-                if next_month.year>2100:raise ValueError('Monthly reproduction needs the next month within the supported date range')
+                # The final supported month uses its actual final instant as the
+                # terminal anchor, rather than requesting an out-of-range date.
+                next_month=min((first.replace(day=28)+timedelta(days=4)).replace(day=1),MAX_TIME)
                 x=provider.longitude(body,first);y=provider.longitude(body,next_month)
                 x=r['unwrapped']+delta(x,r['longitude']);y=x+delta(y,x%360)
                 r['plot_longitude']=scale.coordinate(x)+(scale.coordinate(y)-scale.coordinate(x))*(t-first)/(next_month-first)
@@ -130,6 +140,8 @@ def calculate(settings,data=None,provider=None,include_events=True):
     metadata=dict(software='AstroCalc Universal Clock',version=__version__,astronomy=provider.metadata(),
                   input_checksum=data.checksum if data is not None else None,data_report=data.report if data is not None else None,
                   synthetic=data.spec.synthetic if data is not None else False,source_method_ids=sorted({l['method'] for l in levels}|{e.method for e in events}),
-                  numerical_tolerance_seconds=settings.tolerance_seconds)
+                  numerical_tolerance_seconds=settings.tolerance_seconds,
+                  coverage_start=a,coverage_end=horizon,future_horizon_clipped=settings.horizon_clipped,
+                  monthly_terminal_anchor=MAX_TIME if settings.monthly_sample and horizon.year==2100 and horizon.month==12 else None)
     confluences=level_confluences([l for l in levels if l['timestamp']==instant(settings.selected)],MarketSpec(**settings.market).tick_size)
     return ResearchResult(settings,metadata,positions,events,levels,matches,contact_rows,confluences)

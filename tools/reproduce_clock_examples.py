@@ -1,7 +1,6 @@
 """Regenerate examples locally; add --images with Kaleido and Chrome installed."""
 import argparse
 from dataclasses import asdict
-from datetime import timedelta
 from pathlib import Path
 
 from astrocalc.universal.astronomy import EphemProvider, instant
@@ -54,7 +53,7 @@ def main():
     provider = EphemProvider()
     result = calculate(pine_settings, provider=provider)
     tables = build_tables(provider, pine_settings.bodies, instant(pine_settings.start),
-                          instant(pine_settings.end)+timedelta(days=pine_settings.future_days),
+                          pine_settings.horizon,
                           Scale(**pine_settings.scale), error_degrees=.001)
     pine_dir = out / 'pine'
     pine_dir.mkdir(exist_ok=True)

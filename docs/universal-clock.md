@@ -110,6 +110,18 @@ assumption; genuine historical session-aware data is needed for empirical evalua
 ## Calculations and research interpretation
 
 The provider supports 1900–2100, nine geocentric bodies and optional Moon. It
+includes the entire UTC day **31 December 2100**. UI end dates include the whole
+selected day; CLI timestamps remain exact instants. Requested future days extending
+past 2100 are capped at that boundary, with an app notice and exported
+`future_horizon_clipped` metadata. The app, chart, replay and Pine generator share
+the same effective endpoint. Dates explicitly in 2101 or later remain unsupported.
+
+Monthly reproduction in December 2100 uses the final supported instant as its
+terminal sample, then connects the rounded December 1 and terminal values. This
+boundary convention is recorded as `monthly_terminal_anchor`; no January 2101
+position is requested. Load `samples/year-2100.json` to explore the final year.
+
+The provider
 exposes apparent-of-date, astrometric-of-date and unchanged legacy-J2000 modes.
 The default converts apparent geocentric RA/Dec to ecliptic coordinates of date;
 this is distinct from merely changing an astrometric epoch. See the

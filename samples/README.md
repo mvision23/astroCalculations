@@ -14,6 +14,9 @@
 - `pine-workspace.json`: compact Mercury/Jupiter export configuration.
 - `pine/*.pine`: complete generated Pine v6 indicators, 1993-02-20–1993-04-30 UTC.
 - `pine/ephemeris.json`: their finite tables, metadata and interpolation measurements.
+- `year-2100.json` / `pine-2100/`: Saturn workspace and generated indicators covering
+  the entire year 2100. Regenerate with `universal-clock pine --config
+  samples/year-2100.json --output /tmp/pine-2100`.
 
 Regenerate with `python tools/reproduce_clock_examples.py --images` after optional
 Kaleido/Chrome setup. The script replaces these generated examples deliberately.

@@ -8,6 +8,8 @@ import ephem
 from astrocalc.calculations import ephem_date, longitude as legacy_longitude, zodiac
 
 UTC = timezone.utc
+MIN_TIME = datetime(1900, 1, 1, tzinfo=UTC)
+MAX_TIME = datetime(2101, 1, 1, tzinfo=UTC)-timedelta(microseconds=1)
 BODIES = ('Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto')
 MODES = ('apparent_of_date', 'astrometric_of_date', 'legacy_j2000')
 
@@ -80,8 +82,8 @@ class EphemProvider:
         time = instant(time)
         h = timedelta(minutes=30)
         # Symmetric derivative; one-sided at supported interval boundaries.
-        lo = max(time-h, datetime(1900,1,1,tzinfo=UTC))
-        hi = min(time+h, datetime(2101,1,1,tzinfo=UTC)-timedelta(microseconds=1))
+        lo = max(time-h, MIN_TIME)
+        hi = min(time+h, MAX_TIME)
         return delta(self.longitude(body, hi), self.longitude(body, lo)) / ((hi-lo).total_seconds()/86400)
 
     def position(self, body, time):

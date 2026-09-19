@@ -6,6 +6,21 @@ The actual sample indicators are
 They contain a finite local ephemeris for Jupiter and Mercury, including the
 1993 Mercury retrograde loop. They require no Python connection or external feed.
 
+Year 2100 is supported too. Ready-generated Saturn indicators covering
+**1 January–31 December 2100 UTC** are in [`samples/pine-2100`](../samples/pine-2100).
+Their price scale follows the historical Dow preset; it is editable and does not
+represent a prediction of the Dow's level in 2100. Regenerate them with:
+
+```sh
+universal-clock pine --config samples/year-2100.json --output /tmp/pine-2100
+```
+
+Select other bodies and date intervals through 2100 in the app or workspace.
+Future days past 31 December 2100 are capped and reported in metadata. Finite-table
+size limits still apply: a single script does not embed the whole 1900–2100 span.
+Split long spans into smaller exports. The 2100 examples can display future
+astronomical curves from the coverage start; future market bars do not exist.
+
 No TradingView compiler/account is accessible in this build environment. The
 generated text has local semantic/static tests and independent interpolation
 validation; compilation and chart runtime have **not** been executed in TradingView.

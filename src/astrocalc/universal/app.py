@@ -61,7 +61,7 @@ with st.sidebar:
         monthly=st.checkbox('Monthly Saturn-style reproduction',s.monthly_sample)
         if st.form_submit_button('Calculate',type='primary'):
             try:
-                s.start=datetime.combine(a,time(),UTC).isoformat();s.end=datetime.combine(b,time(),UTC).isoformat()
+                s.start=datetime.combine(a,time(),UTC).isoformat();s.end=datetime.combine(b,time.max,UTC).isoformat()
                 s.bodies=bodies;s.coordinate_mode=coord;s.scale.update(unit=unit,rounding=rounding,quote_units=quote)
                 s.low=low;s.high=high;s.future_days=future;s.step_hours=step;s.pair=[pair1,pair2];s.orb=orb;s.opposite=opposite;s.monthly_sample=monthly
                 s.validate();st.session_state.workspace=asdict(s);st.rerun()
@@ -70,6 +70,7 @@ with st.sidebar:
 st.title('Universal Clock')
 st.caption('Explore time, planetary motion and price · Jeanne Long, Book I (1993)')
 st.info('Astronomical positions are calculations. Market relationships are research hypotheses. Historical presets have not been validated as forecasts.')
+if s.horizon_clipped:st.info('Future astronomy ends on 31 December 2100, the last supported UTC date. The requested extra days beyond that date are omitted from charts and Pine exports.')
 
 with st.expander('Price data & market sessions',expanded=False):
     source=st.radio('Price source',['No prices · astronomy only','Upload CSV / Parquet','Synthetic demonstration','Book transcribed ranges'],horizontal=True)
@@ -118,7 +119,7 @@ with st.expander('Price data & market sessions',expanded=False):
     except (ValueError,TypeError) as exc:st.error(str(exc))
 
 if data is not None and data.spec.synthetic:st.warning('Synthetic prices — demonstration only. No statistics here measure the book’s historical claims.')
-start_day=instant(s.start).date();last_day=(instant(s.end)+timedelta(days=s.future_days)).date()
+start_day=instant(s.start).date();last_day=s.horizon.date()
 if 'replay_day' not in st.session_state or not start_day<=st.session_state.replay_day<=last_day:
     st.session_state.replay_day=min(last_day,max(start_day,instant(s.selected).date()))
 if 'replay_time' not in st.session_state:st.session_state.replay_time=instant(s.selected).time().replace(tzinfo=None)
@@ -126,7 +127,10 @@ def move_day(offset):
     st.session_state.replay_day=min(last_day,max(start_day,st.session_state.replay_day+timedelta(days=offset)))
 c1,c2,c3,c4=st.columns([1,1,6,2])
 c1.button('← Previous',on_click=move_day,args=(-1,));c2.button('Next →',on_click=move_day,args=(1,))
-selected_day=c3.slider('Replay day · focus slider and use arrow keys',min_value=start_day,max_value=last_day,key='replay_day',step=timedelta(days=1))
+if start_day==last_day:
+    selected_day=c3.date_input('Replay day',min_value=start_day,max_value=last_day,key='replay_day',disabled=True)
+else:
+    selected_day=c3.slider('Replay day · focus slider and use arrow keys',min_value=start_day,max_value=last_day,key='replay_day',step=timedelta(days=1))
 selected_time=c4.time_input('UTC time',key='replay_time')
 s.selected=datetime.combine(selected_day,selected_time,UTC).isoformat()
 st.session_state.workspace=asdict(s)
@@ -264,7 +268,7 @@ with tabs[6]:
     if st.button('Generate Pine v6 indicators'):
         try:
             with st.spinner('Adapting knots and independently measuring interpolation error…'):
-                tables=build_tables(EphemProvider(s.coordinate_mode),s.bodies,instant(s.start),instant(s.end)+timedelta(days=s.future_days),Scale(**s.scale),market.tick_size,fraction,error,spacing)
+                tables=build_tables(EphemProvider(s.coordinate_mode),s.bodies,instant(s.start),s.horizon,Scale(**s.scale),market.tick_size,fraction,error,spacing)
                 overlay,meta=generate_pine(tables,result.events,s,result.metadata);pane,_=generate_pine(tables,result.events,s,result.metadata,True)
             st.download_button('Price overlay .pine',overlay,'universal_clock_overlay.pine','text/plain',on_click='ignore')
             st.download_button('Degrees / phase .pine',pane,'universal_clock_degrees.pine','text/plain',on_click='ignore')

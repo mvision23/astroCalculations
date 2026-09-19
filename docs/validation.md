@@ -1,5 +1,18 @@
 # Validation record
 
+## Year-2100 boundary update
+
+The complete Universal Clock suite passes: **32 tests in 29.21 seconds**.
+
+Four additional tests cover the final UTC instant in all three coordinate modes
+for every supported body, default future-horizon clipping, December monthly
+reproduction, event/chart endpoints, actual CLI-generated Pine coverage, and
+single-day replay/Calculate controls on 31 December 2100. Ready-generated
+year-2100 Pine artifacts are under `samples/pine-2100`; their tables and metadata
+end at 2100-12-31 23:59:59.999 UTC in Pine's millisecond timestamp representation.
+The local engine retains microsecond timestamps. TradingView compilation remains
+unverified; the existing manual verification procedure still applies.
+
 Verified locally on 2026-09-19 with Python 3.13 and the versions in
 `requirements-clock.lock`.
 

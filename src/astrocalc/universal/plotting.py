@@ -60,7 +60,7 @@ def price_chart(result,data=None,show_static=True,show_events=True,show_ranges=T
                 fig.add_vrect(x0=r['target_time']-timedelta(days=s.window_days),x1=r['target_time']+timedelta(days=s.window_days),fillcolor='#8ba3cb',opacity=.04,line_width=0)
     fig.add_shape(type='line',x0=selected,x1=selected,y0=s.low,y1=s.high,line=dict(color='#eeeeee',width=1,dash='dot'))
     fig.update_layout(xaxis_rangeslider_visible=False,height=650,yaxis_title=s.scale.get('quote_units','price'),yaxis_range=[s.low,s.high],
-                      xaxis_range=[instant(s.start),instant(s.end)+timedelta(days=s.future_days)])
+                      xaxis_range=[instant(s.start),s.horizon])
     return theme(fig,'Price · planetary channels & clock divisions')
 
 

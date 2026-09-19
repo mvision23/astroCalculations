@@ -1,7 +1,6 @@
 """Local launcher and headless calculation / export command."""
 import argparse
 from dataclasses import asdict
-from datetime import timedelta
 import json
 from pathlib import Path
 import sys
@@ -52,7 +51,7 @@ def main(argv=None):
             content=fig.to_image(format=args.output.suffix.lstrip('.')) if args.image else html_chart(fig,dict(result.metadata,settings=asdict(s)))
         else:
             from .pine import build_tables,generate_pine
-            tables=build_tables(provider,s.bodies,instant(s.start),instant(s.end)+timedelta(days=s.future_days),Scale(**s.scale),MarketSpec(**s.market).tick_size,args.tick_fraction,args.error_degrees,args.max_step_hours)
+            tables=build_tables(provider,s.bodies,instant(s.start),s.horizon,Scale(**s.scale),MarketSpec(**s.market).tick_size,args.tick_fraction,args.error_degrees,args.max_step_hours)
             overlay,meta=generate_pine(tables,result.events,s,result.metadata)
             pane,_=generate_pine(tables,result.events,s,result.metadata,pane=True)
             save(args.output/'universal_clock_overlay.pine',overlay,args.overwrite)
