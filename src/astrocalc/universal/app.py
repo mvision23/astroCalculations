@@ -25,6 +25,24 @@ h1 {letter-spacing:-.04em} .block-container{padding-top:2rem}
 if 'workspace' not in st.session_state:st.session_state.workspace=asdict(Settings())
 s=Settings.from_dict(st.session_state.workspace)
 
+def change_price_source():
+    # Only an explicit user action may detach a file from the workspace. A
+    # stale/recreated radio widget must not erase the saved data binding.
+    saved=dict(st.session_state.workspace)
+    if st.session_state.price_source!='Local dataset':saved['price_file']=None
+    elif not saved.get('price_file') and saved.get('preset')=='Bitcoin · $369':
+        saved['price_file']='bitcoin_universal.csv'
+    st.session_state.workspace=saved
+
+def change_local_file():
+    st.session_state.workspace=dict(st.session_state.workspace,price_file=st.session_state.local_price_file)
+
+def restore_bitcoin_prices():
+    st.session_state.workspace=dict(st.session_state.workspace,price_file='bitcoin_universal.csv',
+                                    market=asdict(bitcoin_market()),column_mapping={})
+    st.session_state.price_source='Local dataset'
+    st.session_state.local_price_file='bitcoin_universal.csv'
+
 with st.sidebar:
     st.markdown('### ◷ Universal Clock')
     st.caption('ASTROCALC · LOCAL RESEARCH')
@@ -90,15 +108,16 @@ if s.horizon_clipped:st.info('Future astronomy ends on 31 December 2100, the las
 
 with st.expander('Price data & market sessions',expanded=False):
     source_options=['No prices · astronomy only','Local dataset','Upload CSV / Parquet','Synthetic demonstration','Book transcribed ranges']
-    source=st.radio('Price source',source_options,index=1 if s.price_file else 0,horizontal=True,key='price_source')
+    if s.price_file:st.session_state.price_source='Local dataset'
+    source=st.radio('Price source',source_options,index=1 if s.price_file else 0,horizontal=True,key='price_source',on_change=change_price_source)
     local_file=None
     if source=='Local dataset':
         candidates=sorted(p.relative_to(data_root()).as_posix() for p in data_root().glob('*') if p.suffix.lower() in ('.csv','.parquet'))
         if candidates:
-            local_file=st.selectbox('Local price file',candidates,index=candidates.index(s.price_file) if s.price_file in candidates else 0)
+            if s.price_file in candidates:st.session_state.local_price_file=s.price_file
+            local_file=st.selectbox('Local price file',candidates,index=candidates.index(s.price_file) if s.price_file in candidates else 0,key='local_price_file',on_change=change_local_file)
             s.price_file=local_file
         else:st.info('No CSV/Parquet files found in the local data directory.')
-    else:s.price_file=None
     book_name=st.selectbox('Source range fixture',['sugar_daily','sp_trines_june_1991','sp_trines_march_1992','dow_trines']) if source=='Book transcribed ranges' else None
     uploaded=st.file_uploader('Historical price file',type=['csv','parquet']) if source=='Upload CSV / Parquet' else None
     c1,c2,c3=st.columns(3)
@@ -148,6 +167,10 @@ with st.expander('Price data & market sessions',expanded=False):
         elif book_name:data=book_ranges(book_name,market);st.json(data.report,expanded=False)
     except (ValueError,TypeError) as exc:st.error(str(exc))
 
+if data is None and s.preset=='Bitcoin · $369':
+    st.warning('Bitcoin prices are not loaded. Restore the prepared dataset while keeping your selected planets, dates and scale.')
+    st.button('Restore Bitcoin prices',on_click=restore_bitcoin_prices)
+
 if data is not None and data.spec.synthetic:st.warning('Synthetic prices — demonstration only. No statistics here measure the book’s historical claims.')
 start_day=instant(s.start).date();last_day=s.horizon.date()
 if 'replay_day' not in st.session_state or not start_day<=st.session_state.replay_day<=last_day:
@@ -183,7 +206,7 @@ cols[3].metric('Observed price bars',str(len(data.completed(instant(s.selected))
 tabs=st.tabs(['Price & replay','Astronomy','Universal Clock','Events & calendar','Aspect families','Methods & settings','Export & Pine'])
 with tabs[0]:
     c1,c2,c3=st.columns(3)
-    show_static=c1.checkbox('Static divisions',True);show_events=c2.checkbox('Event markers',True);show_ranges=c3.checkbox('Source ranges / target windows',True)
+    show_static=c1.checkbox('Static divisions',True);show_events=c2.checkbox('Event markers',True);show_ranges=c3.checkbox('Source ranges / target windows',False)
     fig=price_chart(result,data,show_static,show_events,show_ranges)
     st.plotly_chart(fig,width='stretch',key='price')
     if data is None:st.caption('Planetary trajectories work without prices. Import prices to enable observed ranges and contacts.')
