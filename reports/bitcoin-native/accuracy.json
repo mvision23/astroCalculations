@@ -1,0 +1,85 @@
+{
+  "reference": "Swiss Ephemeris 2.10.03 Moshier, TRUEPOS | NONUT, identical TT",
+  "frame": "geometric geocentric mean ecliptic/equinox of date",
+  "timescale": "UTC approximates UT1 + NASA piecewise delta-T polynomials",
+  "samples_per_body": 15345,
+  "interval": [
+    "2009-01-01T00:00:00Z",
+    "2050-12-31T23:59:59.999Z"
+  ],
+  "bodies": {
+    "Sun": {
+      "max_deg": 0.009067632709616191,
+      "max_guide_residual": 1.9142688362544504,
+      "max_time": 1370044800000,
+      "rms_deg": 0.0033146373329455514,
+      "smooth_price_max_369": 3.3459564698483746
+    },
+    "Mercury": {
+      "max_deg": 0.013672056332268312,
+      "max_guide_residual": 26.402808941049443,
+      "max_time": 1372723200000,
+      "rms_deg": 0.0035904705394182008,
+      "smooth_price_max_369": 5.044988786607007
+    },
+    "Venus": {
+      "max_deg": 0.02934819408739031,
+      "max_guide_residual": 48.246382509059,
+      "max_time": 2398291200000,
+      "rms_deg": 0.004888416333578444,
+      "smooth_price_max_369": 10.829483618247025
+    },
+    "Mars": {
+      "max_deg": 0.055965140180830986,
+      "max_guide_residual": 53.64702435909021,
+      "max_time": 2474928000000,
+      "rms_deg": 0.008525907979107817,
+      "smooth_price_max_369": 20.651136726726634
+    },
+    "Jupiter": {
+      "max_deg": 0.029938929370928236,
+      "max_guide_residual": 16.705369348227805,
+      "max_time": 2521238400000,
+      "rms_deg": 0.007748189099298743,
+      "smooth_price_max_369": 11.047464937872519
+    },
+    "Saturn": {
+      "max_deg": 0.04822837518662482,
+      "max_guide_residual": 12.2071973162233,
+      "max_time": 2437776000000,
+      "rms_deg": 0.017514536639667563,
+      "smooth_price_max_369": 17.796270443864557
+    },
+    "Uranus": {
+      "max_deg": 0.025069377875468035,
+      "max_guide_residual": 8.416555721035081,
+      "max_time": 1598918400000,
+      "rms_deg": 0.015986755841845182,
+      "smooth_price_max_369": 9.250600436047705
+    },
+    "Neptune": {
+      "max_deg": 0.020447053768350543,
+      "max_guide_residual": 2.863203370914789,
+      "max_time": 1562976000000,
+      "rms_deg": 0.009501194354448099,
+      "smooth_price_max_369": 7.54496284052135
+    },
+    "Pluto": {
+      "max_deg": 0.018691702659111797,
+      "max_guide_residual": 29.130203456585434,
+      "max_time": 2475446400000,
+      "rms_deg": 0.008889266474070054,
+      "smooth_price_max_369": 6.897238281212253
+    },
+    "Moon": {
+      "max_deg": 0.09010446681548956,
+      "max_guide_residual": 8.01921900123125,
+      "max_time": 2405203200000,
+      "rms_deg": 0.02650704373466249,
+      "smooth_price_max_369": 33.24854825491565
+    }
+  },
+  "pine_execution": false,
+  "source_expressions": "Scalar Pine expressions translated by source_harness.py; not a Pine compiler or runtime",
+  "mirror_checked": true
+}

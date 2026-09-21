@@ -1,0 +1,371 @@
+{
+  "source_sha256": "36e4bd85af66fe1cc5ba12f1818588a45873dab2e72ecba3ef04a73c4f07e675",
+  "diagnostics": {
+    "Sun": {
+      "k": -415,
+      "reference_price": 102951.0,
+      "minimum_positive_price": 369.0,
+      "minimum_date": "2025-11-23T00:00:00+00:00"
+    },
+    "Moon": {
+      "k": -5360,
+      "reference_price": 97785.0,
+      "minimum_positive_price": 3321.0,
+      "minimum_date": "2026-08-12T00:00:00+00:00"
+    },
+    "Mars": {
+      "k": -218,
+      "reference_price": 99999.0,
+      "minimum_positive_price": 1476.0,
+      "minimum_date": "2025-09-01T00:00:00+00:00"
+    },
+    "Neptune": {
+      "k": -19,
+      "reference_price": 98892.0,
+      "minimum_positive_price": 97047.0,
+      "minimum_date": "2025-11-19T00:00:00+00:00"
+    }
+  },
+  "app_interval": [
+    "2025-06-05T00:00:00+00:00",
+    "2025-07-05T00:00:00+00:00"
+  ],
+  "app_metadata": {
+    "provider": "PyEphem",
+    "backend_version": "4.2",
+    "mode": "apparent_of_date",
+    "origin": "geocentric",
+    "zodiac": "tropical",
+    "epoch": "of date",
+    "convention": "apparent RA/Dec transformed to ecliptic of date",
+    "time_scale": "UTC input; PyEphem internal dynamical time / delta-T",
+    "supported_dates": "1900-01-01 through 2100-12-31 UTC",
+    "accuracy": "Backend accuracy is not the event solver time tolerance; see docs/universal-clock.md",
+    "downloads": false
+  },
+  "comparison": {
+    "Sun": {
+      "winding_m": 27,
+      "app_max_deg": 0.010670925477825222,
+      "app_rms_deg": 0.008801939287330507,
+      "matching_reference_max_deg": 0.005565317200307618,
+      "book_max_price_difference": 369.0
+    },
+    "Mercury": {
+      "winding_m": 27,
+      "app_max_deg": 0.0181569557335024,
+      "app_rms_deg": 0.012787937071778594,
+      "matching_reference_max_deg": 0.004030490024888422,
+      "book_max_price_difference": 369.0
+    },
+    "Venus": {
+      "winding_m": 27,
+      "app_max_deg": 0.013205956891397364,
+      "app_rms_deg": 0.010960989518042086,
+      "matching_reference_max_deg": 0.008942214410126326,
+      "book_max_price_difference": 369.0
+    },
+    "Mars": {
+      "winding_m": 14,
+      "app_max_deg": 0.012825000397242547,
+      "app_rms_deg": 0.011699518011741397,
+      "matching_reference_max_deg": 0.007286578058483428,
+      "book_max_price_difference": 369.0
+    },
+    "Jupiter": {
+      "winding_m": 3,
+      "app_max_deg": 0.014258633065992399,
+      "app_rms_deg": 0.013821347262733085,
+      "matching_reference_max_deg": 0.00654220339265521,
+      "book_max_price_difference": 369.0
+    },
+    "Saturn": {
+      "winding_m": 3,
+      "app_max_deg": 0.026534267497254405,
+      "app_rms_deg": 0.024396847843126297,
+      "matching_reference_max_deg": 0.02645550347506287,
+      "book_max_price_difference": 369.0
+    },
+    "Uranus": {
+      "winding_m": 1,
+      "app_max_deg": 0.02710774427475826,
+      "app_rms_deg": 0.02688351259486766,
+      "matching_reference_max_deg": 0.021584665157092786,
+      "book_max_price_difference": 369.0
+    },
+    "Neptune": {
+      "winding_m": 2,
+      "app_max_deg": 0.00408081177170061,
+      "app_rms_deg": 0.0026211940491756005,
+      "matching_reference_max_deg": 0.0027555186642302942,
+      "book_max_price_difference": 0.0
+    },
+    "Pluto": {
+      "winding_m": 0,
+      "app_max_deg": 0.006431782819106502,
+      "app_rms_deg": 0.005282838790810362,
+      "matching_reference_max_deg": 0.003518552112495854,
+      "book_max_price_difference": 369.0
+    },
+    "Moon": {
+      "winding_m": 341,
+      "app_max_deg": 0.05326346991932951,
+      "app_rms_deg": 0.03195045358309846,
+      "matching_reference_max_deg": 0.05310166622803081,
+      "book_max_price_difference": 369.0
+    }
+  },
+  "render_errors": {
+    "Sun": {
+      "sample_hours": 5.454545277777778,
+      "max_step_deg": 0.23165119274017343,
+      "max_interpolation_deg": 3.6697383620776236e-06,
+      "max_interpolation_price": 0.0013541334556066431
+    },
+    "Mercury": {
+      "sample_hours": 2.4,
+      "max_step_deg": 0.22007403648422041,
+      "max_interpolation_deg": 0.00024447805481031537,
+      "max_interpolation_price": 0.09021240222500637
+    },
+    "Venus": {
+      "sample_hours": 4.0,
+      "max_step_deg": 0.20978497272335517,
+      "max_interpolation_deg": 0.00014537708011630457,
+      "max_interpolation_price": 0.053644142562916386
+    },
+    "Mars": {
+      "sample_hours": 6.0,
+      "max_step_deg": 0.19701659502334223,
+      "max_interpolation_deg": 0.00010978095815517008,
+      "max_interpolation_price": 0.04050917355925776
+    },
+    "Jupiter": {
+      "sample_hours": 6.0,
+      "max_step_deg": 0.05901247333554238,
+      "max_interpolation_deg": 2.7221083882977837e-05,
+      "max_interpolation_price": 0.010044579952818822
+    },
+    "Saturn": {
+      "sample_hours": 6.0,
+      "max_step_deg": 0.0311673221451656,
+      "max_interpolation_deg": 1.4259744375522132e-05,
+      "max_interpolation_price": 0.005261845674567667
+    },
+    "Uranus": {
+      "sample_hours": 6.0,
+      "max_step_deg": 0.014615610151452074,
+      "max_interpolation_deg": 6.933920190022036e-06,
+      "max_interpolation_price": 0.0025586165501181313
+    },
+    "Neptune": {
+      "sample_hours": 6.0,
+      "max_step_deg": 0.009493399255916302,
+      "max_interpolation_deg": 4.5502969214794575e-06,
+      "max_interpolation_price": 0.0016790595640259198
+    },
+    "Pluto": {
+      "sample_hours": 6.0,
+      "max_step_deg": 0.008146929586814622,
+      "max_interpolation_deg": 3.7872763414270594e-06,
+      "max_interpolation_price": 0.001397504969986585
+    },
+    "Moon": {
+      "sample_hours": 0.3529411111111111,
+      "max_step_deg": 0.22517085655999836,
+      "max_interpolation_deg": 1.3782002497464418e-05,
+      "max_interpolation_price": 0.00508555892156437
+    }
+  },
+  "resources": {
+    "default_nine_full_history": {
+      "paths": 18,
+      "historical_segments": 659,
+      "historical_bars": 6453,
+      "samples": 320,
+      "vertices": 1262,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 18,
+      "start": "2009-01-01T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2026-09-08T00:00:00+00:00",
+      "counts": {
+        "Sun": 1,
+        "Mercury": 1,
+        "Venus": 1,
+        "Mars": 1,
+        "Jupiter": 1,
+        "Saturn": 1,
+        "Uranus": 1,
+        "Neptune": 1,
+        "Pluto": 1
+      },
+      "source_builder_matches": true
+    },
+    "all_ten_full_history": {
+      "paths": 24,
+      "historical_segments": 2859,
+      "historical_bars": 6453,
+      "samples": 798,
+      "vertices": 3168,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 20,
+      "start": "2009-01-01T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2026-09-08T00:00:00+00:00",
+      "counts": {
+        "Sun": 1,
+        "Mercury": 1,
+        "Venus": 1,
+        "Mars": 1,
+        "Jupiter": 1,
+        "Saturn": 1,
+        "Uranus": 1,
+        "Neptune": 1,
+        "Pluto": 1,
+        "Moon": 1
+      },
+      "source_builder_matches": true
+    },
+    "dense_mars_neptune": {
+      "paths": 25,
+      "historical_segments": 343,
+      "historical_bars": 6453,
+      "samples": 58,
+      "vertices": 1397,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 32,
+      "start": "2009-01-01T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2026-09-08T00:00:00+00:00",
+      "counts": {
+        "Mars": 8,
+        "Neptune": 8
+      },
+      "source_builder_matches": true
+    },
+    "sun_moon_full_history": {
+      "paths": 21,
+      "historical_segments": 7618,
+      "historical_bars": 6453,
+      "samples": 510,
+      "vertices": 6099,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 12,
+      "start": "2009-01-01T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2026-09-08T00:00:00+00:00",
+      "counts": {
+        "Sun": 3,
+        "Moon": 3
+      },
+      "source_builder_matches": true
+    },
+    "default_nine_120_future": {
+      "paths": 29,
+      "historical_segments": 26,
+      "historical_bars": 121,
+      "samples": 5338,
+      "vertices": 21323,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 18,
+      "start": "2026-05-04T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2026-12-30T00:00:00+00:00",
+      "counts": {
+        "Sun": 1,
+        "Mercury": 1,
+        "Venus": 1,
+        "Mars": 1,
+        "Jupiter": 1,
+        "Saturn": 1,
+        "Uranus": 1,
+        "Neptune": 1,
+        "Pluto": 1
+      },
+      "source_builder_matches": true
+    },
+    "dense_mars_neptune_120_future": {
+      "paths": 30,
+      "historical_segments": 31,
+      "historical_bars": 121,
+      "samples": 962,
+      "vertices": 24112,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 32,
+      "start": "2026-05-04T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2026-12-30T00:00:00+00:00",
+      "counts": {
+        "Mars": 8,
+        "Neptune": 8
+      },
+      "source_builder_matches": true
+    },
+    "sun_700_future": {
+      "paths": 22,
+      "historical_segments": 4,
+      "historical_bars": 121,
+      "samples": 3082,
+      "vertices": 12306,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 2,
+      "start": "2026-05-04T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2028-08-01T00:00:00+00:00",
+      "counts": {
+        "Sun": 1
+      },
+      "source_builder_matches": true
+    },
+    "mars_neptune_700_future": {
+      "paths": 13,
+      "historical_segments": 6,
+      "historical_bars": 121,
+      "samples": 5602,
+      "vertices": 22395,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 4,
+      "start": "2026-05-04T00:00:00+00:00",
+      "split": "2026-09-01T00:00:00+00:00",
+      "end": "2028-08-01T00:00:00+00:00",
+      "counts": {
+        "Mars": 1,
+        "Neptune": 1
+      },
+      "source_builder_matches": true
+    }
+  },
+  "figure_resources": {
+    "mars-neptune": {
+      "paths": 25,
+      "historical_segments": 27,
+      "historical_bars": 31,
+      "samples": 58,
+      "vertices": 1425,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 32
+    },
+    "sun-moon": {
+      "paths": 20,
+      "historical_segments": 40,
+      "historical_bars": 31,
+      "samples": 510,
+      "vertices": 6100,
+      "plots": 32,
+      "plot_counts": 64,
+      "allocated_curves": 12
+    }
+  },
+  "pine_compiled": false,
+  "pine_runtime_verified": false
+}

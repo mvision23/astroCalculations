@@ -1,0 +1,646 @@
+{
+  "schemas": {
+    "Settings": {
+      "start": {
+        "classification": "editable in Pine",
+        "mapping": "Display start; model dates begin 2009-01-01 UTC. Earlier dates return na."
+      },
+      "end": {
+        "classification": "editable in Pine",
+        "mapping": "Display end; limits history and future drawings within 2050."
+      },
+      "selected": {
+        "classification": "chart-derived",
+        "mapping": "TradingView Bar Replay supplies the selected chart time. The inspection table and its timestamp controls were deliberately removed."
+      },
+      "bodies": {
+        "classification": "editable in Pine",
+        "mapping": "All / Custom / Hide all, ten independent toggles and colors. All enables nine core bodies; Moon still opt-in."
+      },
+      "pair": {
+        "classification": "editable in Pine",
+        "mapping": "Pair first / second; every supported body. Calculation includes a selected Moon even when hidden."
+      },
+      "coordinate_mode": {
+        "classification": "fixed model property",
+        "mapping": "Geometric geocentric mean ecliptic/equinox of date only. Apparent-of-date, astrometric-of-date and legacy J2000 are NOT implemented or offered."
+      },
+      "scale": {
+        "classification": "editable in Pine",
+        "mapping": "See every Scale field below; exact price arithmetic, different documented astronomical model."
+      },
+      "market": {
+        "classification": "chart-derived",
+        "mapping": "Chart OHLC and metadata plus editable research calendar; see MarketSpec below."
+      },
+      "column_mapping": {
+        "classification": "local-only with a concrete reason",
+        "mapping": "CSV/Parquet column parsing has no meaning for TradingView chart OHLC."
+      },
+      "price_file": {
+        "classification": "local-only with a concrete reason",
+        "mapping": "The installed indicator consumes the active chart; it cannot read a local file."
+      },
+      "low": {
+        "classification": "editable in Pine",
+        "mapping": "Shared minimum price (default 70,000), with a per-body override; used for branch selection, clipping, future paths and contacts."
+      },
+      "high": {
+        "classification": "editable in Pine",
+        "mapping": "Shared maximum price (default 125,000), per-body overrides and independent 0\u201312 main counts. Keep eligible branches and replenish on exit; counts exclude opposites. Combined active requests must fit 32 curves."
+      },
+      "orb": {
+        "classification": "editable in Pine",
+        "mapping": "Aspect orb degrees, 0\u20135.9; refined entry/exit around all phase targets and exact modulo-24 clock matches."
+      },
+      "occupancy_mode": {
+        "classification": "editable in Pine",
+        "mapping": "continuous [0,1], rounded_labels [-0.5,1.5], degree_buckets [0,2] repeated modulo 24; boundary events retained."
+      },
+      "clock_alignment_mode": {
+        "classification": "editable in Pine",
+        "mapping": "exact_phase modulo 24, or rounded_sector boundaries searched in each body. Neither is zodiac conjunction."
+      },
+      "step_hours": {
+        "classification": "editable in Pine",
+        "mapping": "Event grid hours (1\u20136); historical resolution follows chart bars. Maximum future sample hours (1\u201324), additionally capped by body speed. No historical-day limit."
+      },
+      "future_days": {
+        "classification": "editable in Pine",
+        "mapping": "Future days 0\u2013700 (default 7). Future-only budgets: 96 paths, 6000 body samples and 40000 vertices. Historical plots cover all loaded bars with no rolling day/calc-bar cap."
+      },
+      "session_policy": {
+        "classification": "editable in Pine",
+        "mapping": "strict / previous / next assignment of non-session closing dates; never substitutes partial session ranges."
+      },
+      "window_days": {
+        "classification": "editable in Pine",
+        "mapping": "Expanded window \u00b1 calendar days, capped at 3. Strict, assigned and expanded results remain separate."
+      },
+      "shifts": {
+        "classification": "editable in Pine",
+        "mapping": "Cycle shifts CSV, at most five. Every shift creates a retained hit/miss/unavailable/pending candidate; no best-shift selection."
+      },
+      "last_family_dates": {
+        "classification": "editable in Pine",
+        "mapping": "Previous events per target, 1\u20135; retained event history bounded at 128 and analysis window at 180 days."
+      },
+      "comparison_mode": {
+        "classification": "editable in Pine",
+        "mapping": "family or consecutive; manual sequences remain local-only because Pine has no persistent arbitrary event-selection editor."
+      },
+      "conjunction_pairs": {
+        "classification": "editable in Pine",
+        "mapping": "Comparison mode Mercury superior to inferior; distances identify type. Each superior is consumed by its following inferior."
+      },
+      "opposite": {
+        "classification": "editable in Pine",
+        "mapping": "Opposites add 12 steps. Each side retains its eligible branches and replenishes on exit, up to N each within the bracket. Combined historical capacity is 32 curves including opposites."
+      },
+      "halfway": {
+        "classification": "editable in Pine",
+        "mapping": "Halfway lines: offsets 3.5, 9.5, 15.5, 21.5; independent of A\u2013D bands."
+      },
+      "adjoining": {
+        "classification": "editable in Pine",
+        "mapping": "Adjoining support/resistance [d-2.5,d] / [d+1,d+3.5], independent of bands; unanchored static geometry."
+      },
+      "monthly_sample": {
+        "classification": "editable in Pine",
+        "mapping": "Monthly reproduction: UTC first-of-month endpoint rounding followed by linear interpolation, using local shortest-angle endpoint semantics, including Moon aliasing."
+      },
+      "tolerance_seconds": {
+        "classification": "editable in Pine",
+        "mapping": "Root tolerance seconds, 1\u2013300, numerical bracket width only; model error is separately measured."
+      },
+      "contacts": {
+        "classification": "editable in Pine",
+        "mapping": "Calculate price contacts, labels, alerts and tag filters; see all ContactSettings fields below."
+      },
+      "sequences": {
+        "classification": "local-only with a concrete reason",
+        "mapping": "The local arbitrary 2\u20134 event sequence editor and persistence are not implemented; use supported family/consecutive or Mercury pairing in Pine."
+      },
+      "annotations": {
+        "classification": "editable in Pine",
+        "mapping": "Three bounded manual timestamp/text annotations, each with an enable toggle. Saved workspace annotation lists remain local."
+      },
+      "scale_locked": {
+        "classification": "editable in Pine",
+        "mapping": "Bitcoin 369 preset fixes effective unit at 369; Manual activates Manual units per step."
+      },
+      "preset": {
+        "classification": "editable in Pine",
+        "mapping": "Bitcoin 369 or Manual; other named historical presets can be reproduced numerically with Manual but are not extra preset menus."
+      },
+      "schema_version": {
+        "classification": "local-only with a concrete reason",
+        "mapping": "Local workspace JSON version; Pine inputs are saved by TradingView and do not deserialize workspace JSON."
+      }
+    },
+    "Scale": {
+      "unit": {
+        "classification": "editable in Pine",
+        "mapping": "Bitcoin 369 / Manual units per step; positive values only."
+      },
+      "rounding": {
+        "classification": "editable in Pine",
+        "mapping": "Book = floor(L+0.5), Continuous = L; negative half ties match Python."
+      },
+      "quote_units": {
+        "classification": "chart-derived",
+        "mapping": "syminfo.currency and syminfo.ticker; USD and USDT remain distinct, with no currency conversion."
+      },
+      "anchor_price": {
+        "classification": "editable in Pine",
+        "mapping": "Anchor price P0, applied only when Anchor trajectories is enabled."
+      },
+      "anchor_longitude": {
+        "classification": "editable in Pine",
+        "mapping": "Anchor unwrapped longitude L0 is subtracted without rounding."
+      },
+      "anchored": {
+        "classification": "editable in Pine",
+        "mapping": "Anchor trajectories affects planetary curves only; static grid stays unanchored."
+      }
+    },
+    "MarketSpec": {
+      "timezone": {
+        "classification": "editable in Pine",
+        "mapping": "Research timezone (IANA), UTC default; separate event display timezone."
+      },
+      "timestamp_kind": {
+        "classification": "chart-derived",
+        "mapping": "Actual Unix bar timestamps; local daily-label parsing is not a Pine feed operation."
+      },
+      "bar_convention": {
+        "classification": "editable in Pine",
+        "mapping": "Astronomy sample Bar open / Confirmed close; price availability always at confirmed close."
+      },
+      "session_open": {
+        "classification": "editable in Pine",
+        "mapping": "Research session HHMM-HHMM; default 0000-0000, closing-date labels."
+      },
+      "session_close": {
+        "classification": "editable in Pine",
+        "mapping": "Research session close with overnight/equal-open-close convention and timezone-aware DST bounds."
+      },
+      "calendar": {
+        "classification": "editable in Pine",
+        "mapping": "24/7 or weekdays calendar, keyed by session closing date."
+      },
+      "holidays": {
+        "classification": "editable in Pine",
+        "mapping": "Up to 30 excluded ISO closing dates in Holiday closing dates CSV."
+      },
+      "tick_size": {
+        "classification": "editable in Pine",
+        "mapping": "syminfo.mintick by default; Tick override >0 changes contact tolerance and display, never the chart feed."
+      },
+      "quote_units": {
+        "classification": "chart-derived",
+        "mapping": "syminfo.currency and syminfo.ticker; USD and USDT remain distinct, with no currency conversion."
+      },
+      "adjustments": {
+        "classification": "chart-derived",
+        "mapping": "TradingView feed provenance; Pine cannot change corporate-action adjustments with a text input."
+      },
+      "contract_roll": {
+        "classification": "chart-derived",
+        "mapping": "Selected chart symbol/feed determines futures roll; no fictional roll override."
+      },
+      "symbol": {
+        "classification": "chart-derived",
+        "mapping": "Active TradingView syminfo.ticker; no exchange or CSV symbol hardcoded."
+      },
+      "synthetic": {
+        "classification": "chart-derived",
+        "mapping": "chart.is_standard gates all price methods; synthetic OHLC is not treated as observed standard market data."
+      },
+      "bar_minutes": {
+        "classification": "chart-derived",
+        "mapping": "Actual time/time_close coverage and timeframe.in_seconds(); standard weekly charts explicitly disable daily comparisons."
+      }
+    },
+    "ContactSettings": {
+      "tolerance_ticks": {
+        "classification": "editable in Pine",
+        "mapping": "Tolerance ticks times effective tick size; applies to touches, sides, gaps, taking confirming extremes."
+      },
+      "separation_bars": {
+        "classification": "editable in Pine",
+        "mapping": "Test separation bars; separated new touches increment first/second/retest state per branch identity (reset when a plot slot changes k)."
+      },
+      "congestion_bars": {
+        "classification": "editable in Pine",
+        "mapping": "Congestion bars; consecutive touches trigger once at the configured count."
+      },
+      "confirmation_bars": {
+        "classification": "editable in Pine",
+        "mapping": "Close confirmation bars; consecutive closes beyond tolerance trigger close-through, reversal and pending extreme tests."
+      },
+      "field": {
+        "classification": "editable in Pine",
+        "mapping": "Contact field range / close; close-only touch tests still use standard OHLC for gap and extreme-taking logic, matching Python."
+      }
+    }
+  },
+  "app_controls": {
+    "'24-line occupancy'": {
+      "classification": "editable in Pine",
+      "mapping": "continuous [0,1], rounded_labels [-0.5,1.5], degree_buckets [0,2] repeated modulo 24; boundary events retained."
+    },
+    "'Additional clock alignment interpretation'": {
+      "classification": "editable in Pine",
+      "mapping": "exact_phase modulo 24, or rounded_sector boundaries searched in each body. Neither is zodiac conjunction."
+    },
+    "'Anchor longitude L0'": {
+      "classification": "editable in Pine",
+      "mapping": "Anchor unwrapped longitude L0 is subtracted without rounding."
+    },
+    "'Anchor price P0'": {
+      "classification": "editable in Pine",
+      "mapping": "Anchor price P0, applied only when Anchor trajectories is enabled."
+    },
+    "'Apply example settings'": {
+      "classification": "editable in Pine",
+      "mapping": "Bitcoin 369 or Manual; other named historical presets can be reproduced numerically with Manual but are not extra preset menus."
+    },
+    "'Apply method settings'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView recalculates automatically when inputs change; no extra Calculate action is needed."
+    },
+    "'Aspect body'": {
+      "classification": "editable in Pine",
+      "mapping": "Pair first / second; every supported body. Calculation includes a selected Moon even when hidden."
+    },
+    "'Aspect counterpart'": {
+      "classification": "editable in Pine",
+      "mapping": "Pair first / second; every supported body. Calculation includes a selected Moon even when hidden."
+    },
+    "'Asset / contract'": {
+      "classification": "chart-derived",
+      "mapping": "Active TradingView syminfo.ticker; no exchange or CSV symbol hardcoded."
+    },
+    "'Astronomy scale'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "The inspection table and numeric astronomy display were deliberately removed from this price overlay. Headless reports retain longitude and speed comparisons."
+    },
+    "'Bar timestamp labels'": {
+      "classification": "editable in Pine",
+      "mapping": "Astronomy sample Bar open / Confirmed close; price availability always at confirmed close."
+    },
+    "'Bitcoin research findings'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local report and file/image exporters; the native indicator does not invoke the local application."
+    },
+    "'Bitcoin research view'": {
+      "classification": "editable in Pine",
+      "mapping": "Bitcoin 369 or Manual; other named historical presets can be reproduced numerically with Manual but are not extra preset menus."
+    },
+    "'Book price labels \u00b7 nearest step, exact ties down'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Circular wheel layout and printed label centering are local research UI; Pine supplies price trajectories, not a wheel renderer."
+    },
+    "'Calculate'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView recalculates automatically when inputs change; no extra Calculate action is needed."
+    },
+    "'Calendar month YYYY-MM'": {
+      "classification": "editable in Pine",
+      "mapping": "Marker month 0\u201312 filters display within configured dates; use display start/end to select a year."
+    },
+    "'Compare completed price-range dates'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Manual circular-chart overlays stay in the local wheel editor; Pine cycle-shift comparison controls operate on supported event pairs instead."
+    },
+    "'Comparison selection'": {
+      "classification": "editable in Pine",
+      "mapping": "family or consecutive; manual sequences remain local-only because Pine has no persistent arbitrary event-selection editor."
+    },
+    "'Consecutive closes for confirmation'": {
+      "classification": "editable in Pine",
+      "mapping": "Close confirmation bars; consecutive closes beyond tolerance trigger close-through, reversal and pending extreme tests."
+    },
+    "'Consecutive contact bars for congestion'": {
+      "classification": "editable in Pine",
+      "mapping": "Congestion bars; consecutive touches trigger once at the configured count."
+    },
+    "'Contact tolerance, ticks'": {
+      "classification": "editable in Pine",
+      "mapping": "Tolerance ticks times effective tick size; applies to touches, sides, gaps, taking confirming extremes."
+    },
+    "'Contract / roll convention'": {
+      "classification": "chart-derived",
+      "mapping": "Selected chart symbol/feed determines futures roll; no fictional roll override."
+    },
+    "'Coordinates'": {
+      "classification": "fixed model property",
+      "mapping": "Geometric geocentric mean ecliptic/equinox of date only. Apparent-of-date, astrometric-of-date and legacy J2000 are NOT implemented or offered."
+    },
+    "'Corporate-action adjustments'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView feed provenance; Pine cannot change corporate-action adjustments with a text input."
+    },
+    "'Daily observation / movement between planets'": {
+      "classification": "editable in Pine",
+      "mapping": "Three bounded manual timestamp/text annotations, each with an enable toggle. Saved workspace annotation lists remain local."
+    },
+    "'Degrees / phase .pine'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Old generated-ephemeris exporter remains local. The new populated native .pine file is already delivered and requires no export/generation step."
+    },
+    "'Display IANA timezone'": {
+      "classification": "editable in Pine",
+      "mapping": "Event timezone changes formatting only; calculation timestamps remain absolute."
+    },
+    "'Download image'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local report and file/image exporters; the native indicator does not invoke the local application."
+    },
+    "'End (UTC)'": {
+      "classification": "editable in Pine",
+      "mapping": "Display end; limits history and future drawings within 2050."
+    },
+    "'Event markers'": {
+      "classification": "editable in Pine",
+      "mapping": "Astronomical events master and type toggles, pair visibility filter; most recent 120 historical labels."
+    },
+    "'Event orb (degrees / clock units)'": {
+      "classification": "editable in Pine",
+      "mapping": "Aspect orb degrees, 0\u20135.9; refined entry/exit around all phase targets and exact modulo-24 clock matches."
+    },
+    "'Event types'": {
+      "classification": "editable in Pine",
+      "mapping": "Astronomical events master and type toggles, pair visibility filter; most recent 120 historical labels."
+    },
+    "'Excluded holiday dates (comma separated)'": {
+      "classification": "editable in Pine",
+      "mapping": "Up to 30 excluded ISO closing dates in Holiday closing dates CSV."
+    },
+    "'Expanded window \u00b1 calendar days'": {
+      "classification": "editable in Pine",
+      "mapping": "Expanded window \u00b1 calendar days, capped at 3. Strict, assigned and expanded results remain separate."
+    },
+    "'Explicitly remove invalid rows and show rejection report'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local file/fixture importer and validation; Pine uses active TradingView OHLC, with no CSV dependency."
+    },
+    "'Export results \u00b7 CSV + JSON + metadata'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local report and file/image exporters; the native indicator does not invoke the local application."
+    },
+    "'Extension: anchored price transform'": {
+      "classification": "editable in Pine",
+      "mapping": "Anchor trajectories affects planetary curves only; static grid stays unanchored."
+    },
+    "'Future astronomy (days)'": {
+      "classification": "editable in Pine",
+      "mapping": "Future days 0\u2013700 (default 7). Future-only budgets: 96 paths, 6000 body samples and 40000 vertices. Historical plots cover all loaded bars with no rolling day/calc-bar cap."
+    },
+    "'Generate Pine v6 indicators'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Old generated-ephemeris exporter remains local. The new populated native .pine file is already delivered and requires no export/generation step."
+    },
+    "'Halfway divisions'": {
+      "classification": "editable in Pine",
+      "mapping": "Halfway lines: offsets 3.5, 9.5, 15.5, 21.5; independent of A\u2013D bands."
+    },
+    "'Historical price file'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local file/fixture importer and validation; Pine uses active TradingView OHLC, with no CSV dependency."
+    },
+    "'Intraday bar duration, minutes'": {
+      "classification": "chart-derived",
+      "mapping": "Actual time/time_close coverage and timeframe.in_seconds(); standard weekly charts explicitly disable daily comparisons."
+    },
+    "'Load Bitcoin \u00b7 $369'": {
+      "classification": "editable in Pine",
+      "mapping": "Bitcoin 369 or Manual; other named historical presets can be reproduced numerically with Manual but are not extra preset menus."
+    },
+    "'Load workspace'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local workspace serialization is not read by Pine; TradingView saves indicator inputs and chart layouts."
+    },
+    "'Local price file'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local file/fixture importer and validation; Pine uses active TradingView OHLC, with no CSV dependency."
+    },
+    "'Lock price scale'": {
+      "classification": "editable in Pine",
+      "mapping": "Bitcoin 369 preset fixes effective unit at 369; Manual activates Manual units per step."
+    },
+    "'Longitude plotting'": {
+      "classification": "editable in Pine",
+      "mapping": "Book = floor(L+0.5), Continuous = L; negative half ties match Python."
+    },
+    "'Manual sequence (select 2\u20134 events in order)'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "The local arbitrary 2\u20134 event sequence editor and persistence are not implemented; use supported family/consecutive or Mercury pairing in Pine."
+    },
+    "'Market / historical example'": {
+      "classification": "editable in Pine",
+      "mapping": "Bitcoin 369 or Manual; other named historical presets can be reproduced numerically with Manual but are not extra preset menus."
+    },
+    "'Maximum knot spacing, hours'": {
+      "classification": "fixed model property",
+      "mapping": "Dated-table export tolerances do not apply. The native model has measured angular errors; rendering spacing and root tolerance are distinct runtime inputs, with no precision guarantee."
+    },
+    "'Maximum measured interpolation error, degrees'": {
+      "classification": "fixed model property",
+      "mapping": "Dated-table export tolerances do not apply. The native model has measured angular errors; rendering spacing and root tolerance are distinct runtime inputs, with no precision guarantee."
+    },
+    "'Maximum smooth price error, fraction of a tick'": {
+      "classification": "fixed model property",
+      "mapping": "Dated-table export tolerances do not apply. The native model has measured angular errors; rendering spacing and root tolerance are distinct runtime inputs, with no precision guarantee."
+    },
+    "'Minimum bars between tests'": {
+      "classification": "editable in Pine",
+      "mapping": "Test separation bars; separated new touches increment first/second/retest state per branch identity (reset when a plot slot changes k)."
+    },
+    "'Monthly Saturn-style reproduction'": {
+      "classification": "editable in Pine",
+      "mapping": "Monthly reproduction: UTC first-of-month endpoint rounding followed by linear interpolation, using local shortest-angle endpoint semantics, including Moon aliasing."
+    },
+    "'Next \u2192'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView Bar Replay controls chart history. The optional inspection timestamp and numeric table were deliberately removed."
+    },
+    "'Non-session event-date assignment'": {
+      "classification": "editable in Pine",
+      "mapping": "strict / previous / next assignment of non-session closing dates; never substitutes partial session ranges."
+    },
+    "'Opposite / midpoint channels'": {
+      "classification": "editable in Pine",
+      "mapping": "Opposites add 12 steps. Each side retains its eligible branches and replenishes on exit, up to N each within the bracket. Combined historical capacity is 32 curves including opposites."
+    },
+    "'Planets \u00b7 Moon is an extension'": {
+      "classification": "editable in Pine",
+      "mapping": "All / Custom / Hide all, ten independent toggles and colors. All enables nine core bodies; Moon still opt-in."
+    },
+    "'Position spacing (hours)'": {
+      "classification": "editable in Pine",
+      "mapping": "Event grid hours (1\u20136); historical resolution follows chart bars. Maximum future sample hours (1\u201324), additionally capped by body speed. No historical-day limit."
+    },
+    "'Prepare static image'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local report and file/image exporters; the native indicator does not invoke the local application."
+    },
+    "'Preselected cycle shifts (comma separated; 0.5 = opposite)'": {
+      "classification": "editable in Pine",
+      "mapping": "Cycle shifts CSV, at most five. Every shift creates a retained hit/miss/unavailable/pending candidate; no best-shift selection."
+    },
+    "'Previous dates from same aspect family'": {
+      "classification": "editable in Pine",
+      "mapping": "Previous events per target, 1\u20135; retained event history bounded at 128 and analysis window at 180 days."
+    },
+    "'Price overlay .pine'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Old generated-ephemeris exporter remains local. The new populated native .pine file is already delivered and requires no export/generation step."
+    },
+    "'Price panel maximum'": {
+      "classification": "editable in Pine",
+      "mapping": "Shared maximum price (default 125,000), per-body overrides and independent 0\u201312 main counts. Keep eligible branches and replenish on exit; counts exclude opposites. Combined active requests must fit 32 curves."
+    },
+    "'Price panel minimum'": {
+      "classification": "editable in Pine",
+      "mapping": "Shared minimum price (default 70,000), with a per-body override; used for branch selection, clipping, future paths and contacts."
+    },
+    "'Price source'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local file/fixture importer and validation; Pine uses active TradingView OHLC, with no CSV dependency."
+    },
+    "'Price-range shift in cycles \u00b7 0.5 is opposite'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Manual circular-chart overlays stay in the local wheel editor; Pine cycle-shift comparison controls operate on supported event pairs instead."
+    },
+    "'Quote units'": {
+      "classification": "chart-derived",
+      "mapping": "syminfo.currency and syminfo.ticker; USD and USDT remain distinct, with no currency conversion."
+    },
+    "'Quoted units per wheel step'": {
+      "classification": "editable in Pine",
+      "mapping": "Bitcoin 369 / Manual units per step; positive values only."
+    },
+    "'Radial zoom \u00b7 time rings 2\u20139, price rings above 9'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Circular wheel layout and printed label centering are local research UI; Pine supplies price trajectories, not a wheel renderer."
+    },
+    "'Reopen workspace'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local workspace serialization is not read by Pine; TradingView saves indicator inputs and chart layouts."
+    },
+    "'Replay day \u00b7 focus slider and use arrow keys'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView Bar Replay controls chart history. The optional inspection timestamp and numeric table were deliberately removed."
+    },
+    "'Replay day'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView Bar Replay controls chart history. The optional inspection timestamp and numeric table were deliberately removed."
+    },
+    "'Restore Bitcoin prices'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local file/fixture importer and validation; Pine uses active TradingView OHLC, with no CSV dependency."
+    },
+    "'Save daily annotation'": {
+      "classification": "editable in Pine",
+      "mapping": "Three bounded manual timestamp/text annotations, each with an enable toggle. Saved workspace annotation lists remain local."
+    },
+    "'Save sequence'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "The local arbitrary 2\u20134 event sequence editor and persistence are not implemented; use supported family/consecutive or Mercury pairing in Pine."
+    },
+    "'Save workspace'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local workspace serialization is not read by Pine; TradingView saves indicator inputs and chart layouts."
+    },
+    "'Self-contained clock chart'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local report and file/image exporters; the native indicator does not invoke the local application."
+    },
+    "'Self-contained interactive price chart'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local report and file/image exporters; the native indicator does not invoke the local application."
+    },
+    "'Sequence label'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "The local arbitrary 2\u20134 event sequence editor and persistence are not implemented; use supported family/consecutive or Mercury pairing in Pine."
+    },
+    "'Session IANA timezone'": {
+      "classification": "editable in Pine",
+      "mapping": "Research timezone (IANA), UTC default; separate event display timezone."
+    },
+    "'Session calendar'": {
+      "classification": "editable in Pine",
+      "mapping": "24/7 or weekdays calendar, keyed by session closing date."
+    },
+    "'Session closes (local HH:MM)'": {
+      "classification": "editable in Pine",
+      "mapping": "Research session close with overnight/equal-open-close convention and timezone-aware DST bounds."
+    },
+    "'Session opens (local HH:MM)'": {
+      "classification": "editable in Pine",
+      "mapping": "Research session HHMM-HHMM; default 0000-0000, closing-date labels."
+    },
+    "'Show ring labels'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Circular wheel layout and printed label centering are local research UI; Pine supplies price trajectories, not a wheel renderer."
+    },
+    "'Source range fixture'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local file/fixture importer and validation; Pine uses active TradingView OHLC, with no CSV dependency."
+    },
+    "'Source ranges / target windows'": {
+      "classification": "editable in Pine",
+      "mapping": "Completed-session comparisons and optional Source-range boxes remain. Causal strict/assigned/expanded state is retained internally; its dashboard was deliberately removed."
+    },
+    "'Source-derived adjoining areas'": {
+      "classification": "editable in Pine",
+      "mapping": "Adjoining support/resistance [d-2.5,d] / [d+1,d+3.5], independent of bands; unanchored static geometry."
+    },
+    "'Start (UTC)'": {
+      "classification": "editable in Pine",
+      "mapping": "Display start; model dates begin 2009-01-01 UTC. Earlier dates return na."
+    },
+    "'Static divisions'": {
+      "classification": "editable in Pine",
+      "mapping": "A\u2013D bands, Halfway lines and Adjoining areas; bounded cycles around the fixed reference price."
+    },
+    "'Static image format'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Local report and file/image exporters; the native indicator does not invoke the local application."
+    },
+    "'Superior \u2192 following inferior Mercury/Sun pairs'": {
+      "classification": "editable in Pine",
+      "mapping": "Comparison mode Mercury superior to inferior; distances identify type. Each superior is consumed by its following inferior."
+    },
+    "'Tick size'": {
+      "classification": "editable in Pine",
+      "mapping": "syminfo.mintick by default; Tick override >0 changes contact tolerance and display, never the chart feed."
+    },
+    "'Timestamp meaning'": {
+      "classification": "chart-derived",
+      "mapping": "Actual Unix bar timestamps; local daily-label parsing is not a Pine feed operation."
+    },
+    "'Touch field'": {
+      "classification": "editable in Pine",
+      "mapping": "Contact field range / close; close-only touch tests still use standard OHLC for gap and extreme-taking logic, matching Python."
+    },
+    "'UTC time'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView Bar Replay controls chart history. The optional inspection timestamp and numeric table were deliberately removed."
+    },
+    "'Wheel'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Circular wheel layout and printed label centering are local research UI; Pine supplies price trajectories, not a wheel renderer."
+    },
+    "'\u2190 Previous'": {
+      "classification": "chart-derived",
+      "mapping": "TradingView Bar Replay controls chart history. The optional inspection timestamp and numeric table were deliberately removed."
+    },
+    "f'Map {key}'": {
+      "classification": "local-only with a concrete reason",
+      "mapping": "Dynamic local CSV column-mapping controls; TradingView supplies named OHLC fields directly."
+    }
+  }
+}
