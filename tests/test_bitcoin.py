@@ -82,3 +82,41 @@ def test_bitcoin_workspace_loads_local_prices_in_app():
     assert settings['scale']['unit']==369 and settings['price_file']=='bitcoin_universal.csv'
     assert settings['market']['calendar']=='24/7' and settings['market']['timezone']=='UTC'
     assert any(m.label=='Observed price bars' and int(m.value)>5000 for m in at.metric)
+
+
+def test_saved_bitcoin_file_survives_stale_price_source_widget(monkeypatch):
+    from streamlit.testing.v1 import AppTest
+    from astrocalc.universal import workspace
+    root=Path(__file__).parents[1]
+    config=json.loads((root/'data/bitcoin-workspaces/intermediate.json').read_text())
+    config['bodies']=['Sun','Mercury','Venus','Saturn','Mars','Jupiter']
+    # This regression concerns UI data binding. Keep real CSV loading and candle
+    # rendering, but isolate it from the independently tested astronomy engine.
+    monkeypatch.setattr(workspace,'calculate',lambda settings,data:workspace.ResearchResult(settings,{'astronomy':{}},[],[],[],[],[],[]))
+    at=AppTest.from_file(str(root/'src/astrocalc/universal/app.py'),default_timeout=180)
+    at.session_state['workspace']=config
+    # A recreated/stale control must not detach the saved file. Only an explicit
+    # source-change event should override the workspace's data binding.
+    at.session_state['price_source']='No prices · astronomy only'
+    at.run()
+    assert not at.exception
+    assert at.session_state['workspace']['price_file']=='bitcoin_universal.csv'
+    assert next(m for m in at.metric if m.label=='Observed price bars').value=='5467'
+    chart=json.loads(at.get('plotly_chart')[0].proto.spec)
+    assert any(trace['type']=='candlestick' and len(trace['x'])==5467 for trace in chart['data'])
+    next(w for w in at.multiselect if w.label=='Planets · Moon is an extension').set_value(config['bodies']+['Neptune'])
+    next(b for b in at.button if b.label=='Calculate').click().run()
+    assert not at.exception
+    assert at.session_state['workspace']['price_file']=='bitcoin_universal.csv'
+    assert next(m for m in at.metric if m.label=='Observed price bars').value=='5467'
+    before=dict(at.session_state['workspace'])
+    next(w for w in at.radio if w.label=='Price source').set_value('No prices · astronomy only').run()
+    assert at.session_state['workspace']['price_file'] is None
+    assert next(m for m in at.metric if m.label=='Observed price bars').value=='No dataset'
+    next(b for b in at.button if b.label=='Restore Bitcoin prices').click().run()
+    assert not at.exception
+    after=at.session_state['workspace']
+    assert after['price_file']=='bitcoin_universal.csv'
+    assert all(after[k]==before[k] for k in ('bodies','start','end','selected','scale','low','high'))
+    chart=json.loads(at.get('plotly_chart')[0].proto.spec)
+    assert any(trace['type']=='candlestick' and len(trace['x'])==5467 for trace in chart['data'])

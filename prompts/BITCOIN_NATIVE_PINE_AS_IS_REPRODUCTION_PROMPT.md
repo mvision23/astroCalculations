@@ -1,0 +1,1427 @@
+# Reproduce the current native Bitcoin Pine script exactly — preserve, do not rebuild
+
+This is an **exact reproduction / preservation task**, not a new build and not another corrective implementation. The source captured below is the accepted target for this task, including changes made after `BITCOIN_NATIVE_PINE_CORRECTIVE_PROMPT.md` was applied.
+
+Work in the existing repository. Target file:
+
+`pine/bitcoin_universal_clock_native.pine`
+
+If the target already matches the captured source, leave it untouched and report successful verification. If it is absent or an older/different revision, reproduce the embedded source verbatim. Preserve a different existing file before replacement. Do not design a new indicator, regenerate it from requirements, reapply old prompts, reformat it, rename identifiers, tune defaults, optimize it or make additional fixes.
+
+**“Exactly” means byte-for-byte identity**, including coefficients, constants, input labels/defaults/order, comments, whitespace, UTF-8 characters, LF line endings and the final newline. Similar screenshots or passing tests alone do not satisfy exact reproduction.
+
+## Version lock
+
+- Captured from the workspace on **2026-09-21**.
+- File length: **82003 bytes**, **1261 lines**.
+- Encoding: UTF-8, no BOM; LF line endings; one final LF as captured.
+- SHA-256: `36e4bd85af66fe1cc5ba12f1818588a45873dab2e72ecba3ef04a73c4f07e675`
+- The complete source is embedded between the unique payload markers at the end of this prompt. Use that source as data to copy, not a specification to reinterpret.
+
+This prompt reproduces this captured revision, not whichever future revision later occupies the same path. The source payload and checksum are authoritative if this prose, older prompts, tests, reports or READMEs disagree. In particular, some older documentation describes 60 constant-color plots or finite historical drawing windows; neither describes this captured source. Do not update old documentation by modifying the target back to those older designs.
+
+## Current implementation that must survive unchanged
+
+These are review checkpoints, not an invitation to reimplement them. The payload specifies every omitted detail.
+
+### Declaration, model and defaults
+
+Keep the exact v6 declaration: `overlay=true`, `scale=scale.none`, 100 lines, 300 boxes, **400 labels**, 100 polylines, and **no `calc_bars_count` argument**. The primary file has no `f_cell` function, no table/dashboard and no inspection-table inputs.
+
+Retain all nine core bodies plus optional Moon, their existing order, the native orbital elements/perturbations, six-iteration Kepler solver, separate Pluto and lunar models, UTC/TT approximation, geometric mean-of-date convention, canonical winding guides and ±30-minute speed calculation. Preserve the exact model boundaries: 2009-01-01 inclusive to 2051-01-01 exclusive. Do not replace this with generated dates, an external feed or the local app's different coordinate mode.
+
+Preserve book/continuous and anchor arithmetic, including unrounded anchor longitude. Unit 369 remains the default, adjacent main channels are separated by 8,856 and opposites by 4,428. Monthly reproduction remains optional and rejects visible positive-count Moon trajectories. Native events remain independent of monthly display interpolation.
+
+Default master visibility is All; the nine core toggles are true and Moon is false. Every body has its own `Trajectory / event color`, manual k, main count **1** with range **0–12**, optional body-specific range, and 70,000/125,000 bounds. Shared price bounds are also 70,000/125,000. Opposites are enabled. Branch mode defaults to **Price-band coverage**, with Fixed reference and Manual k alternatives. Preserve the reference date 2026-09-01 and reference price 100,000.
+
+### Full loaded history and surviving branch identities
+
+Historical curves span all chart bars loaded within display/model dates. Do not reintroduce a rolling 90/120/360/365-day render window, a 3,000-bar cap, or a finite-history polyline renderer. The event-analysis window remains a separate bounded calculation and must not restrict historical trajectories.
+
+Keep the **32-slot historical plot pool** and its exact plot calls, values, titles, series colors and offsets. It uses the source's 64-count accounting: 32 value series plus 32 color series. Keep `CURVE_BUDGET = 32`, the requested-count check, 240 level/key entries and indexing `body*24 + slot*2 + side`. Opposite allocations count toward the same capacity. Do not restore the former 60 constant-color plots or split historical and drawing colors back into separate user controls.
+
+Preserve `f_replenish` exactly. In price-band coverage mode it:
+
+1. Retains every still-eligible integer k in its current slot.
+2. Clears a slot when its branch exits the configured band.
+3. Seeds an empty family near the band's midpoint.
+4. Fills vacancies using an eligible adjacent k, preferring proximity to the midpoint and the existing left-side tie rule.
+5. Allocates direct and opposite sides independently, up to the requested count and eligible capacity.
+
+Do not replace this survival policy with lowest-k reselection, nearest-close selection or complete reseeding on every bar. Initial selected families can depend on loaded history; that is part of this revision. For a specified `(timestamp, body, k, side)`, the price remains invariant. Do not attempt to remove the history dependence by displacing surviving branches.
+
+Preserve `f_history_color`'s exact k-change predicate and `na` color on the incoming replacement connector. The allocated replacement can exist numerically on a bar before its visible connected line starts. Do not join different k identities or insert fake zero prices. Body colors apply to historical curves, future paths and relevant events.
+
+Keep bar-open sampling and confirmed-close sampling with its **one-chart-bar historical plot offset**. This has the documented next-bar placement limitation across gaps; do not silently replace it with another timestamp architecture in an exact-copy task.
+
+### Future extension and budgets
+
+Preserve **Future days default 7, minimum 0, maximum 700**. Do not regress the maximum to 30, 90 or 120. The input range does not promise every body/count combination fits 700 days. Display/model endpoints and the existing error checks still apply; do not relax budgets or silently coarsen samples to make an expensive combination fit.
+
+Keep maximum future sample hours default 6, range 1–24. `f_sample_hours` caps each body using `min(futureHours, 24*0.25/speedCap)`, with caps 17 for Moon, 2.5 Mercury, 1.5 Venus, 1.1 Sun and 1.0 for the remaining planets. Keep all float/int conversion and endpoint logic as written.
+
+Preserve:
+
+- `PATH_BUDGET = 96`.
+- `SAMPLE_BUDGET = 6000`.
+- `VERTEX_BUDGET = 40000`.
+- `PATH_VERTEX_BUDGET = 9500`.
+- `confirmedKeys := levelKeys.copy()` and the confirmed timestamp seed.
+- Future allocation through the same replenish function, using a copy so historical allocation/contact state is not mutated.
+- `RenderPath`, `f_vertex`, `f_queue` and `f_build_paths`, including segment splitting on identity changes and sampled book-step vertices.
+- Preflight planning/checks and deletion of owned old drawings before drawing replacements.
+- Explicit timestamp polylines with `curved=false`; dashed/40% defaults and existing label behavior.
+- Redraw only at the source's confirmed-history/confirmed-last-bar conditions.
+
+Historical duration must not enter future drawing/sample budgets. Preserve error messages exactly instead of substituting a fallback.
+
+### Existing research features and causal state
+
+Keep the entire event engine, seven aspect families and signed branches, extrema/tangency handling, orb boundaries, stations, ingresses, closed-band occupancy, simultaneous occupancy, and both Mars/Saturn clock interpretations. Keep event deduplication, filters, native future previews and their bounds. Preserve actual label-placement behavior, including the use of an eligible active main slot; do not “improve” it while reproducing the file.
+
+Keep static A–D, halfway and adjoining geometry, with the existing defaults off; three manual annotations; source-range boxes off; and every remaining input, label and limit exactly as captured.
+
+Keep the confirmed standard-OHLC contact state machine and its 240-slot identity keys. Preserve contact state for surviving branches and the exact resets for replacements/inactive levels. Do not replace fixed identities with slot labels in alerts or let future planning alter historical state.
+
+Keep the completed-session ledger, timezone/overnight/DST/holiday behavior, continuous-coverage checks, binary session lookup, weekly-comparison restriction, source availability at target time, all configured shifts, family/consecutive/Mercury pairing and separate strict/assigned/expanded outcomes. Do not reintroduce the removed dashboard to expose these records.
+
+## Reproduction procedure
+
+1. Read the working tree status and the current target. Do not reset, stash, commit, delete screenshots, move prompts or touch unrelated application/test changes.
+2. Extract the payload directly from this Markdown file as bytes. Check its recorded size, line count and SHA-256 **before writing**. If the payload is missing, truncated or fails the checksum, report that and stop the reproduction; do not invent missing code or substitute the original build prompt.
+3. If the target already matches, do not rewrite it. Otherwise preserve an existing different target under a content-addressed backup name, then replace only the target with the validated payload.
+4. Re-read the target and verify byte equality and the recorded hash. Do not append explanations or Markdown fences to the Pine file.
+5. Report whether it was already identical or restored, the target path, final hash and any backup path. A matching hash establishes exact source reproduction, **not TradingView compilation or runtime validation**.
+
+The following extraction procedure implements those steps. Run it from the repository root after saving this complete prompt at `prompts/BITCOIN_NATIVE_PINE_AS_IS_REPRODUCTION_PROMPT.md`. If this prompt was supplied through a chat attachment, save it intact first; do not manually rewrite the Pine payload.
+
+```python
+from pathlib import Path
+import hashlib
+import os
+import tempfile
+
+prompt = Path("prompts/BITCOIN_NATIVE_PINE_AS_IS_REPRODUCTION_PROMPT.md")
+target = Path("pine/bitcoin_universal_clock_native.pine")
+expected = "36e4bd85af66fe1cc5ba12f1818588a45873dab2e72ecba3ef04a73c4f07e675"
+begin = b"<!-- BEGIN FROZEN NATIVE PINE -->\n```pine\n"
+end = b"```\n<!-- END FROZEN NATIVE PINE -->"
+document = prompt.read_bytes()
+if document.count(begin) != 1 or document.count(end) != 1:
+    raise SystemExit("Missing or ambiguous source payload; no target was changed.")
+payload = document.split(begin, 1)[1].split(end, 1)[0]
+if (len(payload) != 82003 or len(payload.splitlines()) != 1261
+        or hashlib.sha256(payload).hexdigest() != expected):
+    raise SystemExit("Source payload does not match the version lock; no target was changed.")
+if target.is_symlink():
+    raise SystemExit("Target is a symlink; resolve its destination explicitly before restoration.")
+if target.exists() and target.read_bytes() == payload:
+    print("Already identical; no write:", target)
+else:
+    if target.exists():
+        previous = target.read_bytes()
+        old_hash = hashlib.sha256(previous).hexdigest()
+        backup = Path("reports/bitcoin-native/reproduction-backups") / (old_hash + ".pine")
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        if backup.exists():
+            if backup.read_bytes() != previous:
+                raise SystemExit("Backup name collision; no target was changed.")
+        else:
+            backup.write_bytes(previous)
+        print("Preserved previous target:", backup)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=target.parent, prefix=".pine-reproduce-", delete=False) as handle:
+        temporary = Path(handle.name)
+        handle.write(payload)
+    try:
+        os.chmod(temporary, target.stat().st_mode & 0o777 if target.exists() else 0o644)
+        os.replace(temporary, target)
+    finally:
+        temporary.unlink(missing_ok=True)
+    print("Restored:", target)
+assert target.read_bytes() == payload
+assert hashlib.sha256(target.read_bytes()).hexdigest() == expected
+print("SHA-256:", expected)
+```
+
+## Optional read-only regression checks
+
+The checksum is the mandatory exactness check. If the existing development environment is available, additionally run the existing relevant tests without changing the captured source to satisfy them:
+
+```sh
+.venv/bin/python -m pytest tests/test_bitcoin_native_pine.py tests/test_bitcoin_native_correction.py tests/test_universal_geometry.py tests/test_universal_events.py tests/test_universal_market.py tests/test_universal_book.py -q
+```
+
+Useful evidence is in `docs/bitcoin-native-pine.md`, `reports/bitcoin-native/correction-report.md`, the parameter audit, `tools/native_pine/source_harness.py` and `render_check.py`. Existing cases cover full 2009–2026 loaded history, surviving/replenished identities, dense Mars/Neptune allocations, Moon motion, copied future seeds and 120-/700-day future scenarios. Consult these for context, not as generators of substitute source. Do not run report generators merely to reproduce a file: they can rewrite existing evidence. Do not claim tests were run unless they were.
+
+Do not launch Streamlit or require a login/publishing workflow. If a regression test or compiler exposes a defect, report it separately and leave this exact revision intact. Fixes belong in a separately authorized change, not in this reproduction. Byte identity does not guarantee identical screenshots across different symbols, data, timeframes, saved inputs, loaded history or linear/log price-scale settings; those TradingView user settings are not captured in this file.
+
+## Frozen source payload — copy verbatim
+
+Everything inside the following fenced block, including its final newline, is the complete target file. The markers and fences are not part of the Pine source.
+
+<!-- BEGIN FROZEN NATIVE PINE -->
+```pine
+//@version=6
+// Bitcoin Universal Clock — independent native implementation, geometric mean of date.
+// Mathematical sources: stjarnhimlen.se/comp/ppcomp.html; NASA SEcat5/deltatpoly.html.
+// No dated ephemeris/event data, requests, imports or external runtime dependencies.
+indicator("Bitcoin Universal Clock · Native", overlay=true, scale=scale.none, max_lines_count=100, max_boxes_count=300, max_labels_count=400, max_polylines_count=100)
+const int DAY = 86400000
+const int MIN_TIME = 1230768000000
+const int MAX_TIME = 2556144000000
+f_mod(float x, float n) =>
+    x - n * math.floor(x / n)
+f_s(float x) =>
+    math.sin(x * math.pi / 180.0)
+f_c(float x) =>
+    math.cos(x * math.pi / 180.0)
+f_atan(float y, float x) =>
+    float a = x == 0 ? (y > 0 ? 90.0 : y < 0 ? -90.0 : 0.0) : math.atan(y / x) * 180.0 / math.pi
+    x < 0 ? a + (y >= 0 ? 180.0 : -180.0) : a
+f_delta(float a, float b) =>
+    f_mod(a - b + 180.0, 360.0) - 180.0
+f_valid(int t) =>
+    not na(t) and t >= MIN_TIME and t < MAX_TIME
+f_day(int t) =>
+    float jd = t / 86400000.0 + 2440587.5
+    float y = (jd - 2451545.0) / 365.2425
+    float dt = y < 50.0 ? 62.92 + 0.32217 * y + 0.005589 * y * y : -20.0 + 32.0 * ((y+180.0)/100.0) * ((y+180.0)/100.0) - 0.5628 * (150.0-y)
+    jd + dt / 86400.0 - 2451543.5
+f_elements(int body, float d) =>
+    switch body
+        0 => [0.0, 0.0, 282.9404 + 4.70935e-05 * d, 1.0, 0.016709 - 1.151e-09 * d, 356.047 + 0.9856002585 * d]
+        1 => [48.3313 + 3.24587e-05 * d, 7.0047 + 5e-08 * d, 29.1241 + 1.01444e-05 * d, 0.387098, 0.205635 + 5.59e-10 * d, 168.6562 + 4.0923344368 * d]
+        2 => [76.6799 + 2.4659e-05 * d, 3.3946 + 2.75e-08 * d, 54.891 + 1.38374e-05 * d, 0.72333, 0.006773 - 1.302e-09 * d, 48.0052 + 1.6021302244 * d]
+        3 => [49.5574 + 2.11081e-05 * d, 1.8497 - 1.78e-08 * d, 286.5016 + 2.92961e-05 * d, 1.523688, 0.093405 + 2.516e-09 * d, 18.6021 + 0.5240207766 * d]
+        4 => [100.4542 + 2.76854e-05 * d, 1.303 - 1.557e-07 * d, 273.8777 + 1.64505e-05 * d, 5.20256, 0.048498 + 4.469e-09 * d, 19.895 + 0.0830853001 * d]
+        5 => [113.6634 + 2.3898e-05 * d, 2.4886 - 1.081e-07 * d, 339.3939 + 2.97661e-05 * d, 9.55475, 0.055546 - 9.499e-09 * d, 316.967 + 0.0334442282 * d]
+        6 => [74.0005 + 1.3978e-05 * d, 0.7733 + 1.9e-08 * d, 96.6612 + 3.0565e-05 * d, 19.18171 - 1.55e-08 * d, 0.047318 + 7.45e-09 * d, 142.5905 + 0.011725806 * d]
+        7 => [131.7806 + 3.0173e-05 * d, 1.77 - 2.55e-07 * d, 272.8461 - 6.027e-06 * d, 30.05826 + 3.313e-08 * d, 0.008606 + 2.15e-09 * d, 260.2471 + 0.005995147 * d]
+        8 => [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        9 => [125.1228 - 0.0529538083 * d, 5.1454, 318.0634 + 0.1643573223 * d, 60.2666, 0.0549, 115.3654 + 13.0649929509 * d]
+        => [float(na), float(na), float(na), float(na), float(na), float(na)]
+f_orbit(int body, float d) =>
+    [n, inc, w, a, e, m] = f_elements(body, d)
+    float mr = f_mod(m, 360.0) * math.pi / 180.0
+    float eccentric = mr + e * math.sin(mr) * (1.0 + e * math.cos(mr))
+    for iteration = 0 to 5
+        eccentric -= (eccentric - e * math.sin(eccentric) - mr) / (1.0 - e * math.cos(eccentric))
+    float xv = a * (math.cos(eccentric) - e)
+    float yv = a * math.sqrt(1.0 - e * e) * math.sin(eccentric)
+    float v = f_atan(yv, xv)
+    float r = math.sqrt(xv * xv + yv * yv)
+    float x = r * (f_c(n) * f_c(v+w) - f_s(n) * f_s(v+w) * f_c(inc))
+    float y = r * (f_s(n) * f_c(v+w) + f_c(n) * f_s(v+w) * f_c(inc))
+    float z = r * f_s(v+w) * f_s(inc)
+    [f_atan(y,x), f_atan(z,math.sqrt(x*x+y*y)), r]
+f_polar(int body, float d) =>
+    float lon = na
+    float lat = na
+    float r = na
+    if body == 8
+        float s = 50.03 + 0.033459652*d
+        float p = 238.95 + 0.003968789*d
+        lon := 238.9508 + 0.00400703 * d - 19.799 * f_s(p) + 19.848 * f_c(p) + 0.897 * f_s(2 * p) - 4.956 * f_c(2 * p) + 0.61 * f_s(3 * p) + 1.211 * f_c(3 * p) - 0.341 * f_s(4 * p) - 0.19 * f_c(4 * p) + 0.128 * f_s(5 * p) - 0.034 * f_c(5 * p) - 0.038 * f_s(6 * p) + 0.031 * f_c(6 * p) + 0.02 * f_s(s - p) - 0.01 * f_c(s - p)
+        lat := -3.9082 - 5.453 * f_s(p) - 14.975 * f_c(p) + 3.527 * f_s(2 * p) + 1.673 * f_c(2 * p) - 1.051 * f_s(3 * p) + 0.328 * f_c(3 * p) + 0.179 * f_s(4 * p) - 0.292 * f_c(4 * p) + 0.019 * f_s(5 * p) + 0.1 * f_c(5 * p) - 0.031 * f_s(6 * p) - 0.026 * f_c(6 * p) + 0.011 * f_c(s - p)
+        r := 40.72 + 6.68 * f_s(p) + 6.9 * f_c(p) - 1.18 * f_s(2 * p) - 0.03 * f_c(2 * p) + 0.15 * f_s(3 * p) - 0.14 * f_c(3 * p)
+    else
+        [ol, ob, od] = f_orbit(body, d)
+        lon := ol
+        lat := ob
+        r := od
+        float j = 19.8950 + 0.0830853001*d
+        float s = 316.9670 + 0.0334442282*d
+        float u = 142.5905 + 0.011725806*d
+        if body == 4
+            lon += -0.332 * f_s(2 * j - 5 * s - 67.6) - 0.056 * f_s(2 * j - 2 * s + 21) + 0.042 * f_s(3 * j - 5 * s + 21) - 0.036 * f_s(j - 2 * s) + 0.022 * f_c(j - s) + 0.023 * f_s(2 * j - 3 * s + 52) - 0.016 * f_s(j - 5 * s - 69)
+        if body == 5
+            lon += 0.812 * f_s(2 * j - 5 * s - 67.6) - 0.229 * f_c(2 * j - 4 * s - 2) + 0.119 * f_s(j - 2 * s - 3) + 0.046 * f_s(2 * j - 6 * s - 69) + 0.014 * f_s(j - 3 * s + 32)
+            lat += -0.02 * f_c(2 * j - 4 * s - 2) + 0.018 * f_s(2 * j - 6 * s - 49)
+        if body == 6
+            lon += 0.04 * f_s(s - 2 * u + 6) + 0.035 * f_s(s - 3 * u + 33) - 0.015 * f_s(j - u + 20)
+        if body == 9
+            [n, inc, w, a, e, m] = f_elements(9, d)
+            [sn, si, ws, sa, se, ms] = f_elements(0, d)
+            float lm = m+w+n
+            float ls = ms+ws
+            float D = lm-ls
+            float F = lm-n
+            lon += -1.274 * f_s(m - 2 * D) + 0.658 * f_s(2 * D) - 0.186 * f_s(ms) - 0.059 * f_s(2 * m - 2 * D) - 0.057 * f_s(m - 2 * D + ms) + 0.053 * f_s(m + 2 * D) + 0.046 * f_s(2 * D - ms) + 0.041 * f_s(m - ms) - 0.035 * f_s(D) - 0.031 * f_s(m + ms) - 0.015 * f_s(2 * F - 2 * D) + 0.011 * f_s(m - 4 * D)
+            lat += -0.173 * f_s(F - 2 * D) - 0.055 * f_s(m - F - 2 * D) - 0.046 * f_s(m + F - 2 * D) + 0.033 * f_s(F + 2 * D) + 0.017 * f_s(2 * m + F)
+            r += -0.58 * f_c(m - 2 * D) - 0.46 * f_c(2 * D)
+            r *= 6378.14 / 149597870.7
+    [lon, lat, r]
+f_guide(int body, float d) =>
+    [n, inc, w, a, e, m] = f_elements(body == 1 or body == 2 ? 0 : body, d)
+    body == 8 ? 238.9508 + 0.00400703*d : n+w+m
+f_geo(int body, float d, float sx, float sy) =>
+    [lon0, lat, r0] = f_polar(body, d)
+    float lon = lon0
+    float r = r0
+    if body != 0 and body != 9
+        float x = r*f_c(lon)*f_c(lat)+sx
+        float y = r*f_s(lon)*f_c(lat)+sy
+        float z = r*f_s(lat)
+        lon := f_atan(y,x)
+        r := math.sqrt(x*x+y*y+z*z)
+    float guide = f_guide(body,d)
+    [guide+f_delta(lon,guide), r]
+f_position(int body, int t) =>
+    float lon = na
+    float distance = na
+    if f_valid(t)
+        float d = f_day(t)
+        [sl, sb, sr] = f_polar(0,d)
+        [gl, gr] = f_geo(body,d,sr*f_c(sl),sr*f_s(sl))
+        lon := gl
+        distance := gr
+    [lon,distance]
+// One time conversion and Earth vector for all bodies at each sample.
+f_sky(int t, bool moon) =>
+    array<float> result = array.new<float>(10,na)
+    if f_valid(t)
+        float d = f_day(t)
+        [sl,sb,sr] = f_polar(0,d)
+        for body = 0 to (moon ? 9 : 8)
+            [lon, distance] = f_geo(body,d,sr*f_c(sl),sr*f_s(sl))
+            result.set(body,lon)
+    result
+f_longitude(int body, int t) =>
+    [lon,distance] = f_position(body,t)
+    lon
+f_speed(int body, int t) =>
+    int a = math.max(MIN_TIME,t-1800000)
+    int b = math.min(MAX_TIME-1,t+1800000)
+    (f_longitude(body,b)-f_longitude(body,a))/((b-a)/86400000.0)
+
+// Runtime settings: each control below changes calculation, filtering or rendering.
+string master = input.string("All", "Bodies", options=["All","Custom","Hide all"], group="Bodies")
+bool visible0 = input.bool(true, "Sun", inline="b0", group="Bodies")
+color color0 = input.color(color.yellow, "Trajectory / event color", inline="b0", group="Bodies")
+int manual0 = input.int(0, "Sun center k", group="Manual branches")
+int count0 = input.int(1,"Sun main trajectories",minval=0,maxval=12,group="Sun range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom0 = input.bool(false,"Use body-specific price range",group="Sun range")
+float low0 = input.float(70000.0,"Minimum price",group="Sun range")
+float high0 = input.float(125000.0,"Maximum price",group="Sun range")
+bool visible1 = input.bool(true, "Mercury", inline="b1", group="Bodies")
+color color1 = input.color(color.orange, "Trajectory / event color", inline="b1", group="Bodies")
+int manual1 = input.int(0, "Mercury center k", group="Manual branches")
+int count1 = input.int(1,"Mercury main trajectories",minval=0,maxval=12,group="Mercury range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom1 = input.bool(false,"Use body-specific price range",group="Mercury range")
+float low1 = input.float(70000.0,"Minimum price",group="Mercury range")
+float high1 = input.float(125000.0,"Maximum price",group="Mercury range")
+bool visible2 = input.bool(true, "Venus", inline="b2", group="Bodies")
+color color2 = input.color(color.fuchsia, "Trajectory / event color", inline="b2", group="Bodies")
+int manual2 = input.int(0, "Venus center k", group="Manual branches")
+int count2 = input.int(1,"Venus main trajectories",minval=0,maxval=12,group="Venus range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom2 = input.bool(false,"Use body-specific price range",group="Venus range")
+float low2 = input.float(70000.0,"Minimum price",group="Venus range")
+float high2 = input.float(125000.0,"Maximum price",group="Venus range")
+bool visible3 = input.bool(true, "Mars", inline="b3", group="Bodies")
+color color3 = input.color(color.red, "Trajectory / event color", inline="b3", group="Bodies")
+int manual3 = input.int(0, "Mars center k", group="Manual branches")
+int count3 = input.int(1,"Mars main trajectories",minval=0,maxval=12,group="Mars range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom3 = input.bool(false,"Use body-specific price range",group="Mars range")
+float low3 = input.float(70000.0,"Minimum price",group="Mars range")
+float high3 = input.float(125000.0,"Maximum price",group="Mars range")
+bool visible4 = input.bool(true, "Jupiter", inline="b4", group="Bodies")
+color color4 = input.color(color.aqua, "Trajectory / event color", inline="b4", group="Bodies")
+int manual4 = input.int(0, "Jupiter center k", group="Manual branches")
+int count4 = input.int(1,"Jupiter main trajectories",minval=0,maxval=12,group="Jupiter range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom4 = input.bool(false,"Use body-specific price range",group="Jupiter range")
+float low4 = input.float(70000.0,"Minimum price",group="Jupiter range")
+float high4 = input.float(125000.0,"Maximum price",group="Jupiter range")
+bool visible5 = input.bool(true, "Saturn", inline="b5", group="Bodies")
+color color5 = input.color(color.lime, "Trajectory / event color", inline="b5", group="Bodies")
+int manual5 = input.int(0, "Saturn center k", group="Manual branches")
+int count5 = input.int(1,"Saturn main trajectories",minval=0,maxval=12,group="Saturn range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom5 = input.bool(false,"Use body-specific price range",group="Saturn range")
+float low5 = input.float(70000.0,"Minimum price",group="Saturn range")
+float high5 = input.float(125000.0,"Maximum price",group="Saturn range")
+bool visible6 = input.bool(true, "Uranus", inline="b6", group="Bodies")
+color color6 = input.color(color.teal, "Trajectory / event color", inline="b6", group="Bodies")
+int manual6 = input.int(0, "Uranus center k", group="Manual branches")
+int count6 = input.int(1,"Uranus main trajectories",minval=0,maxval=12,group="Uranus range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom6 = input.bool(false,"Use body-specific price range",group="Uranus range")
+float low6 = input.float(70000.0,"Minimum price",group="Uranus range")
+float high6 = input.float(125000.0,"Maximum price",group="Uranus range")
+bool visible7 = input.bool(true, "Neptune", inline="b7", group="Bodies")
+color color7 = input.color(color.blue, "Trajectory / event color", inline="b7", group="Bodies")
+int manual7 = input.int(0, "Neptune center k", group="Manual branches")
+int count7 = input.int(1,"Neptune main trajectories",minval=0,maxval=12,group="Neptune range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom7 = input.bool(false,"Use body-specific price range",group="Neptune range")
+float low7 = input.float(70000.0,"Minimum price",group="Neptune range")
+float high7 = input.float(125000.0,"Maximum price",group="Neptune range")
+bool visible8 = input.bool(true, "Pluto", inline="b8", group="Bodies")
+color color8 = input.color(color.purple, "Trajectory / event color", inline="b8", group="Bodies")
+int manual8 = input.int(0, "Pluto center k", group="Manual branches")
+int count8 = input.int(1,"Pluto main trajectories",minval=0,maxval=12,group="Pluto range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom8 = input.bool(false,"Use body-specific price range",group="Pluto range")
+float low8 = input.float(70000.0,"Minimum price",group="Pluto range")
+float high8 = input.float(125000.0,"Maximum price",group="Pluto range")
+bool visible9 = input.bool(false, "Moon", inline="b9", group="Bodies")
+color color9 = input.color(color.silver, "Trajectory / event color", inline="b9", group="Bodies")
+int manual9 = input.int(0, "Moon center k", group="Manual branches")
+int count9 = input.int(1,"Moon main trajectories",minval=0,maxval=12,group="Moon range",tooltip="Maximum simultaneous mains inside this band. Keep each branch until it exits, then replenish. Opposites add the same count; total curves across enabled bodies must fit 32 slots.")
+bool custom9 = input.bool(false,"Use body-specific price range",group="Moon range")
+float low9 = input.float(70000.0,"Minimum price",group="Moon range")
+float high9 = input.float(125000.0,"Maximum price",group="Moon range")
+string scaleMode = input.string("Bitcoin 369", "Scale", options=["Bitcoin 369","Manual"], group="Price geometry")
+float manualUnit = input.float(369.0, "Manual units per step", minval=0.000001, group="Price geometry")
+float unit = scaleMode == "Bitcoin 369" ? 369.0 : manualUnit
+string rounding = input.string("Book", "Rounding", options=["Book","Continuous"], group="Price geometry")
+bool anchored = input.bool(false, "Anchor trajectories", group="Price geometry")
+float anchorPrice = input.float(0.0, "Anchor price", group="Price geometry")
+float anchorLongitude = input.float(0.0, "Anchor unwrapped longitude", group="Price geometry")
+string branchMode = input.string("Price-band coverage", "Branch selection", options=["Price-band coverage","Fixed reference","Manual k"], group="Price geometry")
+int referenceTime = input.time(timestamp("01 Sep 2026 00:00 +0000"), "Fixed branch reference", group="Price geometry")
+float referencePrice = input.float(100000.0, "Fixed reference price", group="Price geometry")
+bool opposite = input.bool(true, "Opposite / midpoint trajectories", group="Price geometry")
+float priceLow = input.float(70000.0,"Display price low",group="Price geometry")
+float priceHigh = input.float(125000.0,"Display price high",group="Price geometry")
+bool monthly = input.bool(false,"Monthly reproduction (UTC first-of-month)",group="Price geometry")
+int displayStart = input.time(timestamp("01 Jan 2009 00:00 +0000"),"Display start",group="Time and future")
+int displayEnd = input.time(timestamp("31 Dec 2050 23:59 +0000"),"Display end",group="Time and future")
+string sampleMode = input.string("Bar open","Astronomy sample",options=["Bar open","Confirmed close"],group="Time and future")
+bool futureOn = input.bool(true,"Future trajectories",group="Time and future")
+int futureDays = input.int(7,"Future days",minval=0,maxval=700,group="Time and future")
+int futureHours = input.int(6,"Maximum future sample hours",minval=1,maxval=24,group="Time and future")
+string futureStyle = input.string("Dashed","Future line style",options=["Solid","Dashed","Dotted"],group="Time and future")
+int futureTransparency = input.int(40,"Future transparency",minval=0,maxval=100,group="Time and future")
+bool curveLabels = input.bool(false,"Future curve labels",group="Time and future")
+bool gridBands = input.bool(false,"A–D bands",group="Static grid")
+bool halfway = input.bool(false,"Halfway lines",group="Static grid")
+bool adjoining = input.bool(false,"Adjoining support / resistance",group="Static grid")
+int gridCycles = input.int(3,"Static cycles around fixed price",minval=1,maxval=5,group="Static grid")
+string pairAName = input.string("Mercury","Pair first",options=["Sun","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto","Moon"],group="Events")
+string pairBName = input.string("Sun","Pair second",options=["Sun","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto","Moon"],group="Events")
+bool eventOn = input.bool(true,"Astronomical events",group="Events")
+int futureEventDays = input.int(0,"Future event search days (0 = off)",minval=0,maxval=7,group="Events")
+int analysisDays = input.int(30,"Analysis days before last loaded bar",minval=1,maxval=180,group="Events")
+int eventHours = input.int(6,"Search grid hours (extrema subdivided)",minval=1,maxval=6,group="Events")
+int solverSeconds = input.int(10,"Root tolerance seconds (not model accuracy)",minval=1,maxval=300,group="Events")
+float orb = input.float(1.0,"Aspect orb degrees",minval=0.0,maxval=5.9,group="Events")
+bool aspectsOn = input.bool(true,"Aspect markers: 0/30/60/90/120/150/180",group="Events")
+bool stationsOn = input.bool(false,"Station markers",group="Events")
+bool ingressOn = input.bool(false,"Zodiac ingress markers",group="Events")
+bool occupancyOn = input.bool(false,"24-line entry / exit markers",group="Events")
+bool simultaneousOn = input.bool(false,"Simultaneous 24-line occupancy",group="Events")
+string occupancyMode = input.string("continuous","24-line interpretation",options=["continuous","rounded_labels","degree_buckets"],group="Events")
+bool clockOn = input.bool(false,"Mars/Saturn clock alignment",group="Events")
+string clockMode = input.string("exact_phase","Clock interpretation",options=["exact_phase","rounded_sector"],group="Events")
+bool pairVisibleOnly = input.bool(false,"Pair events require both bodies visible",group="Events")
+string displayZone = input.string("UTC","Event timezone",group="Events")
+int calendarMonth = input.int(0,"Marker month (0 = all, display filter)",minval=0,maxval=12,group="Events")
+bool contactOn = input.bool(false,"Calculate price contacts",group="Price contacts")
+bool contactLabels = input.bool(false,"Contact labels",group="Price contacts")
+bool contactAlerts = input.bool(false,"Confirmed price alerts",group="Price contacts")
+string alertFilter = input.string("All","Alert tags",options=["All","Tests","Touches","Confirmations","Reversals","Gaps"],group="Price contacts")
+float tickOverride = input.float(0.0,"Tick override (0 = chart)",minval=0,group="Price contacts")
+float toleranceTicks = input.float(1.0,"Tolerance ticks",minval=0,group="Price contacts")
+int separation = input.int(3,"Test separation bars",minval=1,group="Price contacts")
+int congestion = input.int(3,"Congestion bars",minval=1,group="Price contacts")
+int confirmation = input.int(1,"Close confirmation bars",minval=1,group="Price contacts")
+string contactField = input.string("range","Contact field",options=["range","close"],group="Price contacts")
+bool comparisonsOn = input.bool(false,"Completed-session comparisons",group="Research sessions")
+string researchZone = input.string("UTC","Research timezone",group="Research sessions")
+string researchSession = input.session("0000-0000","Research session",group="Research sessions")
+string calendar = input.string("24/7","Calendar",options=["24/7","weekdays"],group="Research sessions")
+string holidayText = input.string("","Holiday closing dates (YYYY-MM-DD CSV, max 30)",group="Research sessions")
+string sessionPolicy = input.string("next","Non-session assignment",options=["strict","previous","next"],group="Research sessions")
+int windowDays = input.int(1,"Expanded window ± calendar days",minval=0,maxval=3,group="Research sessions")
+int previousEvents = input.int(3,"Previous events per target",minval=1,maxval=5,group="Research sessions")
+string comparisonMode = input.string("family","Comparison mode",options=["family","consecutive","Mercury superior to inferior"],group="Research sessions")
+string shiftText = input.string("0,0.5,1,-0.5,-1","Cycle shifts (CSV, max 5)",group="Research sessions")
+bool rangeBoxes = input.bool(false,"Source-range boxes",group="Research sessions")
+bool annotation0 = input.bool(false,"Annotation 1",group="Annotations")
+int annotationTime0 = input.time(timestamp("20 Sep 2026 00:00 +0000"),"Annotation 1 time",group="Annotations")
+string annotationText0 = input.string("Research note","Annotation 1 text",group="Annotations")
+bool annotation1 = input.bool(false,"Annotation 2",group="Annotations")
+int annotationTime1 = input.time(timestamp("20 Sep 2026 00:00 +0000"),"Annotation 2 time",group="Annotations")
+string annotationText1 = input.string("Research note","Annotation 2 text",group="Annotations")
+bool annotation2 = input.bool(false,"Annotation 3",group="Annotations")
+int annotationTime2 = input.time(timestamp("20 Sep 2026 00:00 +0000"),"Annotation 3 time",group="Annotations")
+string annotationText2 = input.string("Research note","Annotation 3 text",group="Annotations")
+var array<string> names = array.from("Sun","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto","Moon")
+var array<bool> chosen = array.from(visible0,visible1,visible2,visible3,visible4,visible5,visible6,visible7,visible8,visible9)
+var array<color> colors = array.from(color0,color1,color2,color3,color4,color5,color6,color7,color8,color9)
+var array<int> manualK = array.from(manual0,manual1,manual2,manual3,manual4,manual5,manual6,manual7,manual8,manual9)
+var array<int> counts = array.from(count0,count1,count2,count3,count4,count5,count6,count7,count8,count9)
+var array<bool> customRanges = array.from(custom0,custom1,custom2,custom3,custom4,custom5,custom6,custom7,custom8,custom9)
+var array<float> bodyLows = array.from(low0,low1,low2,low3,low4,low5,low6,low7,low8,low9)
+var array<float> bodyHighs = array.from(high0,high1,high2,high3,high4,high5,high6,high7,high8,high9)
+int pairA = names.indexof(pairAName)
+int pairB = names.indexof(pairBName)
+bool needMoon = visible9 or pairA == 9 or pairB == 9
+float tick = tickOverride > 0 ? tickOverride : syminfo.mintick
+float tolerance = toleranceTicks*tick
+f_visible(int body) =>
+    master != "Hide all" and (body == 9 ? visible9 : master == "All" or chosen.get(body))
+f_q(float lon) =>
+    rounding == "Book" ? math.floor(lon+0.5) : lon
+f_price(float q, int k, bool opp) =>
+    (anchored ? anchorPrice : 0.0)+unit*(q-(anchored ? anchorLongitude : 0.0)+24*k+(opp ? 12 : 0))
+var array<int> centers = array.new<int>(10,0)
+f_low(int body) =>
+    customRanges.get(body) ? bodyLows.get(body) : priceLow
+f_high(int body) =>
+    customRanges.get(body) ? bodyHighs.get(body) : priceHigh
+// Selection is independent of symbol close. Each side has its own eligible k range.
+f_selected_k(float q, float lo, float hi, int count, int center, int slot, bool opp) =>
+    float base = f_price(q,0,opp)
+    int first = branchMode == "Price-band coverage" ? int(math.ceil((lo-base)/(24*unit))) : center-int(math.floor((count-1)/2.0))
+    int k = first+slot
+    float p = f_price(q,k,opp)
+    slot >= 0 and slot < count and p >= lo and p <= hi ? k : na
+// Each stable slot owns one mathematical identity until it leaves the band.
+// Seed/fill nearest the band's midpoint, keeping every still-eligible identity.
+f_replenish(array<int> keys, float q, float lo, float hi, int count, int center, bool opp) =>
+    if not na(q) and count > 0
+        if branchMode == "Price-band coverage"
+            float base = f_price(q,0,opp)
+            int lower = int(math.ceil((lo-base)/(24*unit)))
+            int upper = int(math.floor((hi-base)/(24*unit)))
+            int middle = int(math.floor(((lo+hi)/2-base)/(24*unit)+0.5))
+            for slot = 0 to count-1
+                int k = keys.get(slot)
+                if not na(k) and (k < lower or k > upper)
+                    keys.set(slot,na)
+            for slot = 0 to count-1
+                if na(keys.get(slot))
+                    int first = na
+                    int last = na
+                    for existing in keys
+                        if not na(existing)
+                            first := na(first) ? existing : math.min(first,existing)
+                            last := na(last) ? existing : math.max(last,existing)
+                    int left = na(first) ? middle : first-1
+                    int right = na(last) ? middle : last+1
+                    bool leftFits = left >= lower and left <= upper
+                    bool rightFits = right >= lower and right <= upper
+                    if leftFits or rightFits
+                        int candidate = leftFits and (not rightFits or math.abs(left-middle) <= math.abs(right-middle)) ? left : right
+                        keys.set(slot,candidate)
+        else
+            for slot = 0 to count-1
+                keys.set(slot,f_selected_k(q,lo,hi,count,center,slot,opp))
+    else if keys.size() > 0
+        for slot = 0 to keys.size()-1
+            keys.set(slot,na)
+var array<int> levelKeys = array.new<int>(240,na)
+f_body_level(int body, float q, int slot, bool opp) =>
+    int k = levelKeys.get(body*24+slot*2+(opp ? 1 : 0))
+    float p = f_price(q,k,opp)
+    f_visible(body) and slot < counts.get(body) and (not opp or opposite) and not na(k) and p >= f_low(body) and p <= f_high(body) ? p : na
+f_display(int t) =>
+    f_valid(t) and t >= displayStart and t <= displayEnd
+// Reproduce the local first-of-month endpoint rounding, then linear interpolation.
+// Monthly mode affects trajectories; events always use instantaneous positions.
+f_monthly_coordinate(float current, float first, float next, int t, int start, int end) =>
+    float x = current+f_delta(first,current)
+    float y = x+f_delta(next,x)
+    f_q(x)+(f_q(y)-f_q(x))*(t-start)/(end-start)
+f_coordinates(int t) =>
+    array<float> result = f_sky(t,needMoon)
+    if f_valid(t)
+        int first = timestamp("UTC",year(t,"UTC"),month(t,"UTC"),1,0,0)
+        int nextMonth = math.min(MAX_TIME-1,timestamp("UTC",year(t,"UTC"),month(t,"UTC")+1,1,0,0))
+        array<float> firstSky = monthly ? f_sky(first,needMoon) : array.new<float>(0)
+        array<float> nextSky = monthly ? f_sky(nextMonth,needMoon) : array.new<float>(0)
+        for body = 0 to 9
+            float value = result.get(body)
+            if monthly
+                result.set(body,f_monthly_coordinate(value,firstSky.get(body),nextSky.get(body),t,first,nextMonth))
+            else
+                result.set(body,f_q(value))
+    result
+if barstate.isfirst
+    if priceLow >= priceHigh or displayStart >= displayEnd or pairA == pairB
+        runtime.error("Require low < high, start < end and two different aspect bodies.")
+    if not f_valid(referenceTime)
+        runtime.error("Fixed branch reference must be within 2009–2050.")
+    for body = 0 to 9
+        if f_low(body) >= f_high(body)
+            runtime.error("Each body requires minimum price < maximum price.")
+    if monthly and f_visible(9) and counts.get(9) > 0
+        runtime.error("Moon trajectories require instantaneous mode; disable monthly reproduction.")
+    if futureEventDays > 0 and math.ceil(futureEventDays*24.0/eventHours) > 32
+        runtime.error("Future event budget is 32 grid cells. Reduce future event days or increase search hours.")
+    if math.ceil(analysisDays*24.0/eventHours) > 800
+        runtime.error("Event window budget is 800 grid cells. Reduce analysis days or increase grid hours.")
+    if comparisonMode == "Mercury superior to inferior" and not ((pairA == 1 and pairB == 0) or (pairA == 0 and pairB == 1))
+        runtime.error("Superior/inferior comparisons require the Mercury/Sun pair.")
+    array<float> ref = f_coordinates(referenceTime)
+    for body = 0 to 9
+        int k = int(math.floor((referencePrice-f_price(ref.get(body),0,false))/(24*unit)+0.5))
+        centers.set(body,branchMode == "Manual k" ? manualK.get(body) : k)
+int sampledTime = sampleMode == "Bar open" ? time : barstate.isconfirmed ? time_close : na
+array<float> coordinates = f_coordinates(sampledTime)
+// Historical plots run across ALL loaded bars; no rolling day or calc-bar cap.
+const int CURVE_BUDGET = 32
+var array<int> plotIndices = array.new<int>()
+var int loadedStart = na
+if barstate.isfirst
+    loadedStart := time
+    for body = 0 to 9
+        if f_visible(body) and counts.get(body) > 0
+            for slot = 0 to counts.get(body)-1
+                for side = 0 to (opposite ? 1 : 0)
+                    plotIndices.push(body*24+slot*2+side)
+    if plotIndices.size() > CURVE_BUDGET
+        runtime.error("Maximum 32 historical curves including opposites. Reduce body counts, disable opposites, or split bodies across indicator instances.")
+int renderStart = math.max(math.max(displayStart,MIN_TIME),loadedStart)
+array<float> levels = array.new<float>(240,na)
+if f_display(sampledTime)
+    for body = 0 to 9
+        int count = counts.get(body)
+        if f_visible(body) and count > 0
+            for side = 0 to (opposite ? 1 : 0)
+                array<int> keys = array.new<int>(count,na)
+                for slot = 0 to count-1
+                    keys.set(slot,levelKeys.get(body*24+slot*2+side))
+                f_replenish(keys,coordinates.get(body),f_low(body),f_high(body),count,centers.get(body),side == 1)
+                for slot = 0 to count-1
+                    int index = body*24+slot*2+side
+                    levelKeys.set(index,keys.get(slot))
+                    levels.set(index,f_body_level(body,coordinates.get(body),slot,side == 1))
+f_history_value(int channel) =>
+    channel < plotIndices.size() ? levels.get(plotIndices.get(channel)) : na
+f_history_color(int channel) =>
+    int index = channel < plotIndices.size() ? plotIndices.get(channel) : na
+    int key = not na(index) and not na(levels.get(index)) ? levelKeys.get(index) : na
+    // Suppress only the incoming connector on a k replacement. No price jump
+    // between different identities is drawn (Pine's documented color-gap idiom).
+    bool changed = not na(key) and not na(key[1]) and key != key[1]
+    not na(index) and not na(key) and not changed ? color.new(colors.get(int(index/24)),index % 2 == 1 ? 65 : 0) : na
+// Exactly 32 calls * (value + series color) = 64 compiled plot counts.
+// Confirmed-close plots shift one bar: exact for contiguous time-based BTC bars;
+// session/data gaps retain Pine's next-bar placement rather than arbitrary times.
+plot(f_history_value(0),"Trajectory slot 1",color=f_history_color(0),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(1),"Trajectory slot 2",color=f_history_color(1),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(2),"Trajectory slot 3",color=f_history_color(2),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(3),"Trajectory slot 4",color=f_history_color(3),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(4),"Trajectory slot 5",color=f_history_color(4),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(5),"Trajectory slot 6",color=f_history_color(5),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(6),"Trajectory slot 7",color=f_history_color(6),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(7),"Trajectory slot 8",color=f_history_color(7),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(8),"Trajectory slot 9",color=f_history_color(8),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(9),"Trajectory slot 10",color=f_history_color(9),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(10),"Trajectory slot 11",color=f_history_color(10),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(11),"Trajectory slot 12",color=f_history_color(11),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(12),"Trajectory slot 13",color=f_history_color(12),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(13),"Trajectory slot 14",color=f_history_color(13),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(14),"Trajectory slot 15",color=f_history_color(14),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(15),"Trajectory slot 16",color=f_history_color(15),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(16),"Trajectory slot 17",color=f_history_color(16),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(17),"Trajectory slot 18",color=f_history_color(17),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(18),"Trajectory slot 19",color=f_history_color(18),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(19),"Trajectory slot 20",color=f_history_color(19),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(20),"Trajectory slot 21",color=f_history_color(20),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(21),"Trajectory slot 22",color=f_history_color(21),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(22),"Trajectory slot 23",color=f_history_color(22),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(23),"Trajectory slot 24",color=f_history_color(23),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(24),"Trajectory slot 25",color=f_history_color(24),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(25),"Trajectory slot 26",color=f_history_color(25),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(26),"Trajectory slot 27",color=f_history_color(26),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(27),"Trajectory slot 28",color=f_history_color(27),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(28),"Trajectory slot 29",color=f_history_color(28),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(29),"Trajectory slot 30",color=f_history_color(29),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(30),"Trajectory slot 31",color=f_history_color(30),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+plot(f_history_value(31),"Trajectory slot 32",color=f_history_color(31),linewidth=1,style=rounding == "Book" and not monthly ? plot.style_steplinebr : plot.style_linebr,offset=sampleMode == "Confirmed close" ? 1 : 0)
+
+type AstroEvent
+    int time
+    string kind
+    int first
+    int second
+    float target
+    int family
+    string key
+    int start = na
+    int finish = na
+    bool superior = false
+    string members = ""
+    string direction = ""
+var array<AstroEvent> eventBatch = array.new<AstroEvent>()
+var array<AstroEvent> eventHistory = array.new<AstroEvent>()
+var array<label> eventLabels = array.new<label>()
+var array<int> orbStarts = array.new<int>(12,na)
+var array<int> bandStarts = array.new<int>(10,na)
+var array<int> clockStarts = array.new<int>(1,na)
+var AstroEvent activeSimultaneous = na
+f_value(int a, int b, int t) =>
+    float x = f_longitude(a,t)
+    b >= 0 ? x-f_longitude(b,t) : x
+f_velocity(int a, int b, int t) =>
+    int lo = math.max(MIN_TIME,t-1800000)
+    int hi = math.min(MAX_TIME-1,t+1800000)
+    (f_value(a,b,hi)-f_value(a,b,lo))/((hi-lo)/86400000.0)
+f_root(int a, int b, int left, int right, float target, bool station) =>
+    int lo = left
+    int hi = right
+    float fl = (station ? f_velocity(a,b,lo) : f_value(a,b,lo)-target)
+    for iteration = 0 to 31
+        if hi-lo <= solverSeconds*1000
+            break
+        int middle = lo+int((hi-lo)/2)
+        float fm = station ? f_velocity(a,b,middle) : f_value(a,b,middle)-target
+        if fl*fm <= 0
+            hi := middle
+        else
+            lo := middle
+            fl := fm
+    lo+int((hi-lo)/2)
+f_emit(int t, string kind, int a, int b, float target) =>
+    int phase = int(math.round(f_mod(target,360.0)/30.0)) % 12
+    int family = math.min(phase,12-phase)*30
+    // Same root reached from adjacent search segments is merged within solver tolerance.
+    string key = kind+":"+str.tostring(a)+":"+str.tostring(b)+":"+str.tostring(target,"#.######")
+    bool duplicate = false
+    if eventBatch.size() > 0
+        for i = math.max(0,eventBatch.size()-20) to eventBatch.size()-1
+            AstroEvent old = eventBatch.get(i)
+            if old.key == key and math.abs(old.time-t) <= solverSeconds*2000
+                duplicate := true
+    if not duplicate and f_display(t)
+        AstroEvent ev = AstroEvent.new(t,kind,a,b,target,family,key)
+        if (kind == "aspect" or kind == "aspect tangent") and family == 0 and ((a == 1 and b == 0) or (a == 0 and b == 1))
+            [ml,mr] = f_position(1,t)
+            [sl,sr] = f_position(0,t)
+            ev.superior := mr > sr
+        eventBatch.push(ev)
+        if eventBatch.size() > 512
+            runtime.error("More than 512 events in one bar. Shorten the chart timeframe or disable optional event types.")
+f_cross_segment(int a, int b, int lo, int hi, float x, float y, float stride, float offset, string kind) =>
+    int first = int(math.ceil((math.min(x,y)-offset-1e-8)/stride))
+    int last = int(math.floor((math.max(x,y)-offset+1e-8)/stride))
+    if last-first > 24
+        runtime.error("Event segment crosses more than 25 boundaries; reduce search spacing.")
+    if last >= first
+        for k = first to last
+            float target = k*stride+offset
+            if (x-target)*(y-target) <= 0 and x != y
+                int t = f_root(a,b,lo,hi,target,false)
+                string eventKind = kind
+                if kind == "orb-low" or kind == "clock-low"
+                    eventKind := y > x ? "orb enter" : "orb exit"
+                if kind == "orb-high" or kind == "clock-high"
+                    eventKind := y > x ? "orb exit" : "orb enter"
+                if kind == "band-low"
+                    eventKind := y > x ? "24-line enter" : "24-line exit"
+                if kind == "band-high"
+                    eventKind := y > x ? "24-line exit" : "24-line enter"
+                if str.startswith(kind,"clock-")
+                    eventKind := "clock "+eventKind
+                // Store central aspect target for both orb edges.
+                float storedTarget = (str.startswith(kind,"orb-") or str.startswith(kind,"clock-")) ? target-offset : target
+                f_emit(t,eventKind,a,b,storedTarget)
+f_cross(int a, int b, int lo, int hi, float x, float y, float turnValue, int turnTime, float stride, float offset, string kind) =>
+    if not na(turnTime)
+        float nearest = math.round((turnValue-offset)/stride)*stride+offset
+        bool tangent = math.abs(turnValue-nearest) <= 1e-7 and (x-nearest)*(y-nearest) > 0
+        // Avoid counting a tangency as two crossings at the shared endpoint.
+        float splitValue = tangent ? nearest+(x > nearest ? 2e-7 : -2e-7) : turnValue
+        f_cross_segment(a,b,lo,turnTime,x,splitValue,stride,offset,kind)
+        f_cross_segment(a,b,turnTime,hi,splitValue,y,stride,offset,kind)
+        if tangent
+            string tangentKind = str.startswith(kind,"band-") ? "24-line tangent" : str.startswith(kind,"orb-") ? "orb tangent" : str.startswith(kind,"clock-") ? "clock orb tangent" : kind+" tangent"
+            float storedTarget = str.startswith(kind,"orb-") or str.startswith(kind,"clock-") ? nearest-offset : nearest
+            f_emit(turnTime,tangentKind,a,b,storedTarget)
+    else
+        f_cross_segment(a,b,lo,hi,x,y,stride,offset,kind)
+f_turn(int a, int b, int lo, int hi) =>
+    float va = f_velocity(a,b,lo)
+    float vb = f_velocity(a,b,hi)
+    int t = va*vb <= 0 and va != vb ? f_root(a,b,lo,hi,0,true) : na
+    [t, na(t) ? float(na) : f_value(a,b,t)]
+f_occupied(float longitude) =>
+    float x = f_mod(longitude,24.0)
+    occupancyMode == "continuous" ? x <= 1 : occupancyMode == "rounded_labels" ? x <= 1.5 or x >= 23.5 : x <= 2
+f_occupants(int t) =>
+    array<float> sky = f_sky(t,needMoon)
+    string occupants = ""
+    int count = 0
+    for body = 0 to 9
+        if f_visible(body) and f_occupied(sky.get(body))
+            occupants += (count > 0 ? ", " : "")+names.get(body)
+            count += 1
+    [count,occupants]
+f_search(int lo, int hi) =>
+    array<float> left = f_sky(lo,needMoon)
+    array<float> right = f_sky(hi,needMoon)
+    bool pairActive = not pairVisibleOnly or (f_visible(pairA) and f_visible(pairB))
+    if pairActive and ((eventOn and aspectsOn) or comparisonsOn)
+        float x = left.get(pairA)-left.get(pairB)
+        float y = right.get(pairA)-right.get(pairB)
+        [turn,turnValue] = f_turn(pairA,pairB,lo,hi)
+        f_cross(pairA,pairB,lo,hi,x,y,turnValue,turn,30,0,"aspect")
+        if eventOn and orb > 0 and aspectsOn
+            f_cross(pairA,pairB,lo,hi,x,y,turnValue,turn,30,-orb,"orb-low")
+            f_cross(pairA,pairB,lo,hi,x,y,turnValue,turn,30,orb,"orb-high")
+    for body = 0 to 9
+        if eventOn and f_visible(body) and (stationsOn or ingressOn or occupancyOn or simultaneousOn)
+            float x = left.get(body)
+            float y = right.get(body)
+            [turn,turnValue] = f_turn(body,-1,lo,hi)
+            if stationsOn and not na(turn)
+                f_emit(turn,"station",body,-1,0)
+            if ingressOn
+                f_cross(body,-1,lo,hi,x,y,turnValue,turn,30,0,"ingress")
+            if occupancyOn or simultaneousOn
+                float bandLo = occupancyMode == "rounded_labels" ? -0.5 : 0.0
+                float bandHi = occupancyMode == "continuous" ? 1.0 : occupancyMode == "rounded_labels" ? 1.5 : 2.0
+                f_cross(body,-1,lo,hi,x,y,turnValue,turn,24,bandLo,"band-low")
+                f_cross(body,-1,lo,hi,x,y,turnValue,turn,24,bandHi,"band-high")
+    if eventOn and clockOn and (not pairVisibleOnly or (f_visible(3) and f_visible(5)))
+        float x = left.get(3)-left.get(5)
+        float y = right.get(3)-right.get(5)
+        [turn,turnValue] = f_turn(3,5,lo,hi)
+        if clockMode == "exact_phase"
+            f_cross(3,5,lo,hi,x,y,turnValue,turn,24,0,"clock alignment")
+            if orb > 0
+                f_cross(3,5,lo,hi,x,y,turnValue,turn,24,-orb,"clock-low")
+                f_cross(3,5,lo,hi,x,y,turnValue,turn,24,orb,"clock-high")
+        else
+            // Rounded clock sectors have discontinuous boundaries in EACH body.
+            // Search their half-degree transitions, then test the sector on both sides.
+            for body = 3 to 5 by 2
+                [bt,bv] = f_turn(body,-1,lo,hi)
+                f_cross(body,-1,lo,hi,left.get(body),right.get(body),bv,bt,1,0.5,"clock sector boundary")
+
+// Static geometry is deliberately unanchored, like geometry.static_bands().
+var array<float> staticLow = array.new<float>()
+var array<float> staticHigh = array.new<float>()
+var array<string> staticIDs = array.new<string>()
+f_static(float lo, float hi, string id) =>
+    if hi >= priceLow and lo <= priceHigh
+        staticLow.push(lo)
+        staticHigh.push(hi)
+        staticIDs.push(id)
+if barstate.isfirst
+    int centerCycle = int(math.floor(referencePrice/(24*unit)))
+    for cycleSlot = 0 to gridCycles-1
+        int cycle = centerCycle+cycleSlot-int(math.floor(gridCycles/2.0))
+        for quadrant = 0 to 3
+            float d = 24*cycle+6*quadrant
+            string id = "static k="+str.tostring(cycle)+" "+array.from("A","B","C","D").get(quadrant)
+            if gridBands
+                f_static(unit*d,unit*(d+1),id)
+            if halfway
+                f_static(unit*(d+3.5),unit*(d+3.5),id+" halfway")
+            if adjoining
+                f_static(unit*(d-2.5),unit*d,id+" support")
+                f_static(unit*(d+1),unit*(d+3.5),id+" resistance")
+
+type Contact
+    int lastTest = -1000000000
+    int tests = 0
+    int congestionCount = 0
+    int side = 0
+    int sideRun = 0
+    int lastBreak = 0
+    bool inTouch = false
+    float previousHigh = na
+    float previousLow = na
+    float previousBandLow = na
+    float previousBandHigh = na
+    int pendingSide = 0
+    float pendingHigh = na
+    float pendingLow = na
+var array<int> contactKeys = array.new<int>(240,na)
+var array<Contact> contactStates = array.new<Contact>()
+var array<label> priceLabels = array.new<label>()
+if barstate.isfirst
+    for index = 0 to 239+staticLow.size()
+        contactStates.push(Contact.new())
+f_contact(Contact state, float a, float b) =>
+    string tags = ""
+    float lo = contactField == "range" ? low : close
+    float hi = contactField == "range" ? high : close
+    bool touch = lo <= b+tolerance and hi >= a-tolerance
+    int side = close > b+tolerance ? 1 : close < a-tolerance ? -1 : 0
+    if state.pendingSide == 1 and high > state.pendingHigh+tolerance
+        tags += "first_close_high_taken "
+        state.pendingSide := 0
+    else if state.pendingSide == -1 and low < state.pendingLow-tolerance
+        tags += "first_close_low_taken "
+        state.pendingSide := 0
+    if touch
+        state.congestionCount += 1
+        if not state.inTouch and bar_index-state.lastTest >= separation
+            state.tests += 1
+            state.lastTest := bar_index
+            tags += state.tests == 1 ? "first_test " : state.tests == 2 ? "second_test " : "retest "
+        tags += "touch "
+        if lo < a and hi > b
+            tags += "intrabar_crossing "
+        if state.congestionCount == congestion
+            tags += "congestion "
+    else
+        state.congestionCount := 0
+    if not na(state.previousHigh)
+        if (state.previousHigh < state.previousBandLow-tolerance and low > b+tolerance) or (state.previousLow > state.previousBandHigh+tolerance and high < a-tolerance)
+            tags += "gap "
+    state.sideRun := side == 0 ? 0 : side == state.side ? state.sideRun+1 : 1
+    if side != 0 and state.sideRun == confirmation
+        tags += side > 0 ? "close_above " : "close_below "
+        if state.lastBreak != 0 and side != state.lastBreak
+            tags += "reversal "
+        state.lastBreak := side
+        state.pendingSide := side
+        state.pendingHigh := high
+        state.pendingLow := low
+    state.side := side
+    state.inTouch := touch
+    state.previousHigh := high
+    state.previousLow := low
+    state.previousBandLow := a
+    state.previousBandHigh := b
+    tags
+f_alert_selected(string tags) =>
+    alertFilter == "All" or (alertFilter == "Tests" and str.contains(tags,"test")) or (alertFilter == "Touches" and (str.contains(tags,"touch") or str.contains(tags,"crossing") or str.contains(tags,"congestion"))) or (alertFilter == "Confirmations" and str.contains(tags,"close_")) or (alertFilter == "Reversals" and str.contains(tags,"reversal")) or (alertFilter == "Gaps" and str.contains(tags,"gap"))
+bool priceSupported = chart.is_standard and not na(time_close)
+if contactOn and barstate.isconfirmed and priceSupported and f_display(sampledTime)
+    string messages = ""
+    int messageCount = 0
+    for index = 0 to 239+staticLow.size()
+        if index < 240+staticLow.size()
+            float a = index < 240 ? levels.get(index) : staticLow.get(index-240)
+            float b = index < 240 ? a : staticHigh.get(index-240)
+            if not na(a)
+                if index < 240
+                    int key = levelKeys.get(index)
+                    if na(contactKeys.get(index)) or contactKeys.get(index) != key
+                        contactStates.set(index,Contact.new())
+                    contactKeys.set(index,key)
+                string tags = f_contact(contactStates.get(index),a,b)
+                int body = int(index/24)
+                string id = index < 240 ? names.get(body)+" k="+str.tostring(levelKeys.get(index))+(index%2 == 1 ? " opposite" : " main") : staticIDs.get(index-240)
+                if tags != ""
+                    string message = id+" | "+tags+" | "+str.tostring(a,format.mintick)+" "+syminfo.currency+" | "+str.format_time(time_close,"yyyy-MM-dd HH:mm",displayZone)
+                    if contactLabels
+                        priceLabels.push(label.new(time_close,a,message,xloc=xloc.bar_time,style=label.style_label_up,color=color.new(color.gray,75),textcolor=chart.fg_color,size=size.tiny))
+                        if priceLabels.size() > 70
+                            label.delete(priceLabels.shift())
+                    if contactAlerts and f_alert_selected(tags)
+                        messageCount += 1
+                        if messageCount <= 8
+                            messages += message+"\n"
+            else
+                // Inactive and clipped curves cannot emit alerts on a later re-entry.
+                contactStates.set(index,Contact.new())
+    if messages != ""
+        if messageCount > 8
+            messages += str.tostring(messageCount-8)+" additional contacts (message cap)"
+        alert(messages,alert.freq_once_per_bar_close)
+
+// Session dates are UTC-encoded CIVIL labels, not event instants. Bounds use the
+// research timezone, so DST days need not contain 24 hours. All bars must tile
+// the entire session before its OHLC can enter the completed-session ledger.
+int openHour = int(str.tonumber(str.substring(researchSession,0,2)))
+int openMinute = int(str.tonumber(str.substring(researchSession,2,4)))
+int closeHour = int(str.tonumber(str.substring(researchSession,5,7)))
+int closeMinute = int(str.tonumber(str.substring(researchSession,7,9)))
+int openMinutes = openHour*60+openMinute
+int closeMinutes = closeHour*60+closeMinute
+var array<string> holidays = str.split(str.replace_all(holidayText," ",""),",")
+var array<float> shifts = array.new<float>()
+if barstate.isfirst
+    if holidays.size() > 30
+        runtime.error("Holiday budget is 30 dates.")
+    for holiday in holidays
+        if holiday != ""
+            if str.length(holiday) != 10 or str.substring(holiday,4,5) != "-" or str.substring(holiday,7,8) != "-"
+                runtime.error("Holiday dates must use YYYY-MM-DD.")
+            int hy = int(str.tonumber(str.substring(holiday,0,4)))
+            int hm = int(str.tonumber(str.substring(holiday,5,7)))
+            int hd = int(str.tonumber(str.substring(holiday,8,10)))
+            if na(hy) or na(hm) or na(hd) or hm < 1 or hm > 12 or hd < 1 or hd > 31
+                runtime.error("Invalid holiday date.")
+            if str.format_time(timestamp("UTC",hy,hm,hd,0,0),"yyyy-MM-dd","UTC") != holiday
+                runtime.error("Invalid holiday calendar date.")
+    array<string> entries = str.split(shiftText,",")
+    if entries.size() > 5
+        runtime.error("Comparison budget is five shifts.")
+    for entry in entries
+        float shift = str.tonumber(str.trim(entry))
+        if na(shift)
+            runtime.error("Each cycle shift must be a number.")
+        shifts.push(shift)
+f_civil(int t) =>
+    timestamp("UTC",year(t,researchZone),month(t,researchZone),dayofmonth(t,researchZone),0,0)
+f_session_date(int t) =>
+    int civil = f_civil(t)
+    int cl = timestamp(researchZone,year(civil,"UTC"),month(civil,"UTC"),dayofmonth(civil,"UTC"),closeHour,closeMinute)
+    bool tomorrow = (closeMinutes < openMinutes and t > cl) or (closeMinutes == openMinutes and t >= cl)
+    civil+(tomorrow ? DAY : 0)
+f_session_day(int civil) =>
+    int weekday = dayofweek(civil,"UTC")
+    (calendar == "24/7" or (weekday != dayofweek.saturday and weekday != dayofweek.sunday)) and not holidays.includes(str.format_time(civil,"yyyy-MM-dd","UTC"))
+f_bounds(int civil) =>
+    int openingDate = civil-(closeMinutes <= openMinutes ? DAY : 0)
+    int op = timestamp(researchZone,year(openingDate,"UTC"),month(openingDate,"UTC"),dayofmonth(openingDate,"UTC"),openHour,openMinute)
+    int cl = timestamp(researchZone,year(civil,"UTC"),month(civil,"UTC"),dayofmonth(civil,"UTC"),closeHour,closeMinute)
+    [op,cl]
+f_assigned(int civil) =>
+    int result = civil
+    if not f_session_day(result)
+        result := na
+        if sessionPolicy != "strict"
+            for offset = 1 to 370
+                int candidate = civil+(sessionPolicy == "next" ? offset : -offset)*DAY
+                if f_session_day(candidate)
+                    result := candidate
+                    break
+    result
+
+type SessionRange
+    int date
+    int available
+    float lo
+    float hi
+var array<SessionRange> sessions = array.new<SessionRange>()
+var array<int> sessionDates = array.new<int>()
+var int activeDate = na
+var int cursor = na
+var bool complete = false
+var float sessionLow = na
+var float sessionHigh = na
+bool sessionSupported = priceSupported and timeframe.in_seconds() <= 86400
+if comparisonsOn and sessionSupported and barstate.isconfirmed
+    // A bar is assigned by its last included instant, not by the next session open.
+    int civil = f_session_date(time_close-1)
+    [op,cl] = f_bounds(civil)
+    if time_close > op and time < cl and f_session_day(civil)
+        if civil != activeDate or na(activeDate)
+            activeDate := civil
+            cursor := op
+            complete := time == op and f_session_day(civil)
+            sessionLow := low
+            sessionHigh := high
+        complete := complete and time == cursor and time >= op and time_close <= cl
+        cursor := time_close
+        sessionLow := math.min(sessionLow,low)
+        sessionHigh := math.max(sessionHigh,high)
+        if time_close == cl and complete
+            sessions.push(SessionRange.new(civil,cl,sessionLow,sessionHigh))
+            sessionDates.push(civil)
+            if sessions.size() > 512
+                sessions.shift()
+                sessionDates.shift()
+f_range(int civil, int asof) =>
+    SessionRange result = na
+    if not na(civil) and sessions.size() > 0
+        int index = sessionDates.binary_search(civil)
+        if index >= 0
+            SessionRange candidate = sessions.get(index)
+            if candidate.available <= asof
+                result := candidate
+    result
+// Every candidate and every configured shift is retained in the bounded ledger.
+// -1 unavailable, 0 miss, 1 hit, 2 pending. No best-shift selection.
+type Comparison
+    int sourceTime
+    int targetTime
+    int sourceDate
+    int strictDate
+    int assignedDate
+    float shift
+    float lo
+    float hi
+    bool eligible
+    int strictResult = 2
+    int assignedResult = 2
+    int expandedResult = 2
+    bool expandedComplete = false
+    bool settled = false
+    bool drawn = false
+var array<Comparison> comparisons = array.new<Comparison>()
+var array<AstroEvent> familyHistory = array.new<AstroEvent>()
+var array<box> comparisonBoxes = array.new<box>()
+f_make_comparison(AstroEvent source, AstroEvent target) =>
+    int sourceDate = f_assigned(f_session_date(source.time))
+    SessionRange sourceRange = f_range(sourceDate,target.time)
+    bool eligible = not na(sourceRange)
+    int strict = f_session_date(target.time)
+    int assigned = f_assigned(strict)
+    for shift in shifts
+        float lo = eligible ? sourceRange.lo+24*unit*shift : na
+        float hi = eligible ? sourceRange.hi+24*unit*shift : na
+        comparisons.push(Comparison.new(source.time,target.time,sourceDate,strict,assigned,shift,lo,hi,eligible))
+        if comparisons.size() > 500
+            Comparison removed = comparisons.shift()
+f_pair_event(AstroEvent target) =>
+    int found = 0
+    if familyHistory.size() > 0
+        for index = familyHistory.size()-1 to 0
+            AstroEvent source = familyHistory.get(index)
+            bool matching = comparisonMode == "consecutive" or (comparisonMode == "family" and source.family == target.family)
+            if comparisonMode == "Mercury superior to inferior"
+                matching := target.family == 0 and not target.superior and source.family == 0 and source.superior
+            if matching and source.time < target.time
+                f_make_comparison(source,target)
+                found += 1
+                if found >= (comparisonMode == "Mercury superior to inferior" ? 1 : previousEvents)
+                    break
+    if comparisonMode == "Mercury superior to inferior" and found > 0
+        familyHistory.clear()
+    familyHistory.push(target)
+    if familyHistory.size() > 128
+        familyHistory.shift()
+f_result(Comparison candidate, int civil, int asof) =>
+    int result = -1
+    if candidate.eligible and not na(civil) and f_session_day(civil)
+        [op,cl] = f_bounds(civil)
+        if asof < cl
+            result := 2
+        else
+            SessionRange r = f_range(civil,asof)
+            if not na(r)
+                result := candidate.lo <= r.hi and candidate.hi >= r.lo ? 1 : 0
+    result
+
+var int scanCursor = na
+var int scanStart = na
+var array<int> confirmedKeys = array.new<int>(240,na)
+var int confirmedTime = na
+int analysisStart = math.max(math.max(MIN_TIME,displayStart),last_bar_time-analysisDays*DAY)
+bool searchEnabled = eventOn or comparisonsOn
+if barstate.isconfirmed and not na(time_close)
+    confirmedTime := sampledTime
+    confirmedKeys := levelKeys.copy()
+    eventBatch.clear()
+    if searchEnabled and time_close > analysisStart and time < MAX_TIME and time <= displayEnd
+        if na(scanCursor)
+            scanCursor := math.max(time,analysisStart)
+            scanStart := scanCursor
+            // Occupancy already active at a clipped window start is retained.
+            array<float> initial = f_sky(scanStart,needMoon)
+            for body = 0 to 9
+                if f_visible(body) and f_occupied(initial.get(body))
+                    bandStarts.set(body,scanStart)
+            [initialCount,initialNames] = f_occupants(scanStart)
+            if simultaneousOn and initialCount >= 2
+                activeSimultaneous := AstroEvent.new(scanStart,"simultaneous occupancy",-1,-1,0,0,"multi:"+initialNames,start=scanStart,members=initialNames)
+                eventHistory.push(activeSimultaneous)
+            float initialPhase = initial.get(pairA)-initial.get(pairB)
+            float nearestAspect = math.round(initialPhase/30.0)*30.0
+            if math.abs(initialPhase-nearestAspect) <= orb
+                orbStarts.set(int(math.round(f_mod(nearestAspect,360.0)/30.0)) % 12,scanStart)
+            if math.abs(f_delta((initial.get(3)-initial.get(5))*15,0)/15) <= orb
+                clockStarts.set(0,scanStart)
+        int until = math.min(math.min(time_close,displayEnd),MAX_TIME-1)
+        int count = int(math.ceil((until-scanCursor)/(eventHours*3600000.0)))+1
+        if count > 64
+            runtime.error("A bar/gap requires more than 64 search cells. Use a shorter timeframe, wider search grid, or disable events/comparisons.")
+        if scanCursor < until
+            for cell = 0 to 63
+                if scanCursor >= until
+                    break
+                // UTC-aligned grid, shared across intraday/daily/weekly processing.
+                int gridEnd = (int(math.floor(scanCursor/(eventHours*3600000.0)))+1)*eventHours*3600000
+                int next = math.min(until,gridEnd)
+                int midpoint = scanCursor+int((next-scanCursor)/2)
+                f_search(scanCursor,midpoint)
+                f_search(midpoint,next)
+                scanCursor := next
+    if eventBatch.size() > 0
+        array<int> times = array.new<int>()
+        for ev in eventBatch
+            times.push(ev.time)
+        array<int> sortedIndices = times.sort_indices(order.ascending)
+        for index in sortedIndices
+            AstroEvent ev = eventBatch.get(index)
+            bool duplicate = false
+            if eventHistory.size() > 0
+                for oldIndex = math.max(0,eventHistory.size()-80) to eventHistory.size()-1
+                    AstroEvent old = eventHistory.get(oldIndex)
+                    if old.key == ev.key and math.abs(old.time-ev.time) <= solverSeconds*2000
+                        duplicate := true
+            if not duplicate
+                int phase = int(math.round(f_mod(ev.target,360.0)/30.0)) % 12
+                if ev.kind == "orb enter"
+                    orbStarts.set(phase,ev.time)
+                    ev.start := ev.time
+                if ev.kind == "aspect" or ev.kind == "aspect tangent" or ev.kind == "orb exit"
+                    ev.start := orbStarts.get(phase)
+                if ev.kind == "orb exit"
+                    ev.finish := ev.time
+                    orbStarts.set(phase,na)
+                    if eventHistory.size() > 0
+                        for oldIndex = eventHistory.size()-1 to 0
+                            AstroEvent old = eventHistory.get(oldIndex)
+                            if old.kind == "aspect" and old.target == ev.target and na(old.finish)
+                                old.finish := ev.time
+                                break
+                if ev.kind == "24-line enter"
+                    bandStarts.set(ev.first,ev.time)
+                    ev.start := ev.time
+                if ev.kind == "24-line exit"
+                    ev.start := bandStarts.get(ev.first)
+                    ev.finish := ev.time
+                    bandStarts.set(ev.first,na)
+                    if eventHistory.size() > 0
+                        for oldIndex = eventHistory.size()-1 to 0
+                            AstroEvent old = eventHistory.get(oldIndex)
+                            if old.kind == "24-line enter" and old.first == ev.first and na(old.finish)
+                                old.finish := ev.time
+                                break
+                if ev.kind == "24-line tangent"
+                    ev.start := ev.time
+                    ev.finish := ev.time
+                if ev.kind == "clock orb enter"
+                    clockStarts.set(0,ev.time)
+                    ev.start := ev.time
+                if ev.kind == "clock alignment" or ev.kind == "clock alignment tangent" or ev.kind == "clock orb exit"
+                    ev.start := clockStarts.get(0)
+                if ev.kind == "clock orb exit"
+                    ev.finish := ev.time
+                    clockStarts.set(0,na)
+                    if eventHistory.size() > 0
+                        for oldIndex = eventHistory.size()-1 to 0
+                            AstroEvent old = eventHistory.get(oldIndex)
+                            if (old.kind == "clock alignment" or old.kind == "clock alignment tangent") and old.target == ev.target and na(old.finish)
+                                old.finish := ev.time
+                                break
+                if ev.kind == "orb tangent" or ev.kind == "clock orb tangent"
+                    ev.start := ev.time
+                    ev.finish := ev.time
+                bool show = eventOn
+                if ev.kind == "station" or ev.kind == "ingress"
+                    ev.direction := f_speed(ev.first,math.min(MAX_TIME-1,ev.time+3600000)) > 0 ? "direct" : "retrograde"
+                string detail = ev.kind+" "+names.get(ev.first)+(ev.second >= 0 ? "/"+names.get(ev.second) : "")
+                if ev.direction != ""
+                    detail += " "+ev.direction
+                if ev.kind == "aspect" or ev.kind == "aspect tangent" or str.startswith(ev.kind,"orb ")
+                    detail += " "+str.tostring(f_mod(ev.target,360.0),"#.#")+"°"
+                    show := show and aspectsOn
+                if ev.kind == "clock sector boundary"
+                    int epsilon = solverSeconds*2000+1000
+                    float mb = f_longitude(3,math.max(MIN_TIME,ev.time-epsilon))
+                    float sb = f_longitude(5,math.max(MIN_TIME,ev.time-epsilon))
+                    float ma = f_longitude(3,math.min(MAX_TIME-1,ev.time+epsilon))
+                    float sa = f_longitude(5,math.min(MAX_TIME-1,ev.time+epsilon))
+                    bool before = f_mod(math.floor(mb+0.5)-math.floor(sb+0.5),24) == 0
+                    bool after = f_mod(math.floor(ma+0.5)-math.floor(sa+0.5),24) == 0
+                    show := show and before != after
+                    detail := after ? "Mars/Saturn rounded-sector enter" : "Mars/Saturn rounded-sector exit"
+                if str.startswith(ev.kind,"24-line")
+                    show := show and occupancyOn
+                    if simultaneousOn
+                        [beforeCount,beforeNames] = f_occupants(math.max(MIN_TIME,ev.time-solverSeconds*2000-1000))
+                        [afterCount,afterNames] = f_occupants(math.min(MAX_TIME-1,ev.time+solverSeconds*2000+1000))
+                        if not na(activeSimultaneous) and activeSimultaneous.members != afterNames
+                            activeSimultaneous.finish := ev.time
+                            activeSimultaneous := na
+                        if afterCount >= 2 and na(activeSimultaneous)
+                            activeSimultaneous := AstroEvent.new(ev.time,"simultaneous occupancy",-1,-1,0,0,"multi:"+afterNames,start=ev.time,members=afterNames)
+                            eventHistory.push(activeSimultaneous)
+                        if beforeNames != afterNames and (beforeCount >= 2 or afterCount >= 2)
+                            detail += "\nSimultaneous: "+(afterCount >= 2 ? afterNames : "ended")
+                            show := eventOn
+                if comparisonsOn and sessionSupported and (ev.kind == "aspect" or ev.kind == "aspect tangent")
+                    f_pair_event(ev)
+                eventHistory.push(ev)
+                while eventHistory.size() > 512
+                    eventHistory.shift()
+                if show and (calendarMonth == 0 or month(ev.time,displayZone) == calendarMonth)
+                    array<float> atEvent = f_coordinates(ev.time)
+                    float y = ev.time >= renderStart ? f_body_level(ev.first,atEvent.get(ev.first),0,false) : na
+                    if not na(y)
+                        eventLabels.push(label.new(ev.time,y,detail+"\n"+str.format_time(ev.time,"yyyy-MM-dd HH:mm:ss",displayZone),xloc=xloc.bar_time,style=label.style_label_down,color=color.new(colors.get(ev.first),75),textcolor=chart.fg_color,size=size.tiny))
+                        if eventLabels.size() > 120
+                            label.delete(eventLabels.shift())
+    if comparisonsOn and sessionSupported and comparisons.size() > 0
+        for candidate in comparisons
+            if not candidate.settled
+                candidate.strictResult := f_result(candidate,candidate.strictDate,time_close)
+                candidate.assignedResult := f_result(candidate,candidate.assignedDate,time_close)
+                int expected = 0
+                int known = 0
+                bool pending = false
+                bool hit = false
+                for offset = -windowDays to windowDays
+                    int date = candidate.strictDate+offset*DAY
+                    if f_session_day(date)
+                        expected += 1
+                        int outcome = f_result(candidate,date,time_close)
+                        if outcome == 0 or outcome == 1
+                            known += 1
+                        hit := hit or outcome == 1
+                        pending := pending or outcome == 2
+                candidate.expandedComplete := known == expected and expected > 0
+                candidate.expandedResult := hit ? 1 : candidate.expandedComplete ? 0 : pending ? 2 : -1
+                candidate.settled := candidate.strictResult != 2 and candidate.assignedResult != 2 and not pending
+            if rangeBoxes and candidate.eligible and not candidate.drawn
+                SessionRange source = f_range(candidate.sourceDate,candidate.targetTime)
+                if not na(source) and candidate.hi >= priceLow and candidate.lo <= priceHigh
+                    comparisonBoxes.push(box.new(left=source.available,top=math.min(priceHigh,candidate.hi),right=candidate.targetTime,bottom=math.max(priceLow,candidate.lo),xloc=xloc.bar_time,border_color=color.new(color.gray,70),bgcolor=color.new(color.gray,94),text="shift "+str.tostring(candidate.shift)))
+                    if comparisonBoxes.size() > 25
+                        box.delete(comparisonBoxes.shift())
+                candidate.drawn := true
+
+// Future-only time-positioned paths. Historical coverage uses the plot pool above.
+const int PATH_BUDGET = 96
+const int SAMPLE_BUDGET = 6000
+const int VERTEX_BUDGET = 40000
+const int PATH_VERTEX_BUDGET = 9500
+f_sample_hours(int body) =>
+    float speedCap = body == 9 ? 17.0 : body == 1 ? 2.5 : body == 2 ? 1.5 : body == 0 ? 1.1 : 1.0
+    math.min(futureHours,24.0*0.25/speedCap)
+f_body_coordinate(int body, int t) =>
+    float lon = f_longitude(body,t)
+    float result = f_q(lon)
+    if monthly
+        int first = timestamp("UTC",year(t,"UTC"),month(t,"UTC"),1,0,0)
+        int nextMonth = math.min(MAX_TIME-1,timestamp("UTC",year(t,"UTC"),month(t,"UTC")+1,1,0,0))
+        result := f_monthly_coordinate(lon,f_longitude(body,first),f_longitude(body,nextMonth),t,first,nextMonth)
+    result
+type RenderPath
+    array<chart.point> points
+    int body
+    int side
+    int k
+    bool future
+var array<polyline> trajectoryLines = array.new<polyline>()
+var array<label> futureLabels = array.new<label>()
+var array<label> futureEventLabels = array.new<label>()
+var array<box> gridBoxes = array.new<box>()
+var array<line> gridLines = array.new<line>()
+var array<label> annotations = array.new<label>()
+f_vertex(array<chart.point> points, array<int> used, int t, float p) =>
+    if points.size() >= PATH_VERTEX_BUDGET or used.get(0) >= VERTEX_BUDGET
+        runtime.error("Trajectory vertex budget exceeded. Reduce future days/counts or visible bodies.")
+    points.push(chart.point.from_time(t,p))
+    used.set(0,used.get(0)+1)
+f_queue(array<RenderPath> paths, array<chart.point> points, int body, int side, int k, bool future) =>
+    if points.size() >= 2
+        if paths.size() >= PATH_BUDGET
+            runtime.error("Trajectory budget exceeds 96 segments. Reduce counts, bodies or future days.")
+        paths.push(RenderPath.new(points.copy(),body,side,k,future))
+    points.clear()
+// Continue a copy of the last confirmed allocation. Future planning must never
+// change historical slots/contact state. Every replacement starts a new segment.
+f_build_paths(array<RenderPath> paths, array<int> used, int body, int start, int end, array<int> seed) =>
+    if end > start
+        int count = counts.get(body)
+        int stepMs = int(math.floor(f_sample_hours(body)*3600000))
+        int steps = int(math.ceil((end-start)/float(stepMs)))
+        array<int> times = array.new<int>()
+        array<float> values = array.new<float>()
+        for sample = 0 to steps
+            int t = math.min(end,start+sample*stepMs)
+            times.push(t)
+            values.push(f_body_coordinate(body,t))
+        for side = 0 to (opposite ? 1 : 0)
+            array<int> keys = array.new<int>(count,na)
+            array<int> snapshot = array.new<int>()
+            for slot = 0 to count-1
+                keys.set(slot,seed.get(body*24+slot*2+side))
+            for q in values
+                f_replenish(keys,q,f_low(body),f_high(body),count,centers.get(body),side == 1)
+                for slot = 0 to count-1
+                    snapshot.push(keys.get(slot))
+            for slot = 0 to count-1
+                array<chart.point> points = array.new<chart.point>()
+                int previousK = na
+                float previous = na
+                for sample = 0 to steps
+                    int t = times.get(sample)
+                    int k = snapshot.get(sample*count+slot)
+                    float p = not na(k) ? f_price(values.get(sample),k,side == 1) : na
+                    if na(k) or (not na(previousK) and k != previousK)
+                        f_queue(paths,points,body,side,previousK,true)
+                        previous := na
+                    if not na(p)
+                        if rounding == "Book" and not monthly and not na(previous)
+                            f_vertex(points,used,t,previous)
+                        f_vertex(points,used,t,p)
+                    previousK := k
+                    previous := p
+                f_queue(paths,points,body,side,previousK,true)
+
+bool redraw = barstate.islastconfirmedhistory or (barstate.islast and barstate.isconfirmed)
+if redraw and not na(confirmedTime)
+    int futureEnd = math.min(math.min(confirmedTime+(futureOn ? futureDays : 0)*DAY,MAX_TIME-1),displayEnd)
+    array<RenderPath> paths = array.new<RenderPath>()
+    array<int> used = array.new<int>(1,0)
+    int sampleCount = 0
+    for body = 0 to 9
+        if f_visible(body) and counts.get(body) > 0
+            int stepMs = int(math.floor(f_sample_hours(body)*3600000))
+            sampleCount += futureEnd > math.max(confirmedTime,renderStart) ? int(math.ceil((futureEnd-math.max(confirmedTime,renderStart))/float(stepMs)))+1 : 0
+    if sampleCount > SAMPLE_BUDGET
+        runtime.error("Trajectory budget exceeds 6000 body samples. Reduce future days or visible bodies.")
+    if f_valid(confirmedTime)
+        for body = 0 to 9
+            if f_visible(body) and counts.get(body) > 0
+                f_build_paths(paths,used,body,math.max(confirmedTime,renderStart),futureEnd,confirmedKeys)
+    for drawing in trajectoryLines
+        polyline.delete(drawing)
+    trajectoryLines.clear()
+    for drawing in futureLabels
+        label.delete(drawing)
+    futureLabels.clear()
+    for path in paths
+        int transparency = path.future ? math.min(100,futureTransparency+(path.side == 1 ? 20 : 0)) : path.side == 1 ? 65 : 0
+        string style = not path.future or futureStyle == "Solid" ? line.style_solid : futureStyle == "Dashed" ? line.style_dashed : line.style_dotted
+        trajectoryLines.push(polyline.new(path.points,curved=false,closed=false,xloc=xloc.bar_time,line_color=color.new(colors.get(path.body),transparency),line_style=style,line_width=1))
+        chart.point last = path.points.last()
+        if curveLabels and path.future and last.time == futureEnd
+            futureLabels.push(label.new(last.time,last.price,names.get(path.body)+" k="+str.tostring(path.k)+(path.side == 1 ? " opp" : " main"),xloc=xloc.bar_time,style=label.style_label_left,color=color.new(colors.get(path.body),80),textcolor=chart.fg_color,size=size.tiny))
+    for drawing in gridBoxes
+        box.delete(drawing)
+    gridBoxes.clear()
+    for drawing in gridLines
+        line.delete(drawing)
+    gridLines.clear()
+    for drawing in annotations
+        label.delete(drawing)
+    annotations.clear()
+    if staticLow.size() > 0
+        for index = 0 to staticLow.size()-1
+            float lo = math.max(priceLow,staticLow.get(index))
+            float hi = math.min(priceHigh,staticHigh.get(index))
+            if lo == hi
+                gridLines.push(line.new(renderStart,lo,math.max(time_close,futureEnd),hi,xloc=xloc.bar_time,color=color.new(color.gray,75),style=line.style_dotted))
+            else
+                gridBoxes.push(box.new(left=renderStart,top=hi,right=math.max(time_close,futureEnd),bottom=lo,xloc=xloc.bar_time,border_color=color.new(color.gray,90),bgcolor=color.new(color.gray,96)))
+    array<bool> annotationEnabled = array.from(annotation0,annotation1,annotation2)
+    array<int> annotationTimes = array.from(annotationTime0,annotationTime1,annotationTime2)
+    array<string> annotationTexts = array.from(annotationText0,annotationText1,annotationText2)
+    for i = 0 to 2
+        if annotationEnabled.get(i) and f_display(annotationTimes.get(i))
+            annotations.push(label.new(annotationTimes.get(i),math.max(priceLow,math.min(priceHigh,referencePrice)),annotationTexts.get(i),xloc=xloc.bar_time,style=label.style_label_down,color=color.new(color.gray,70),textcolor=chart.fg_color))
+
+// Future event previews are astronomy only. No future-price candidate is created.
+if redraw
+    for drawing in futureEventLabels
+        label.delete(drawing)
+    futureEventLabels.clear()
+    if eventOn and futureEventDays > 0 and f_valid(confirmedTime)
+        eventBatch.clear()
+        int end = math.min(math.min(confirmedTime+futureEventDays*DAY,displayEnd),MAX_TIME-1)
+        int cursorFuture = confirmedTime
+        for cell = 0 to 31
+            if cursorFuture >= end
+                break
+            int right = math.min(end,cursorFuture+eventHours*3600000)
+            int mid = cursorFuture+int((right-cursorFuture)/2)
+            f_search(cursorFuture,mid)
+            f_search(mid,right)
+            cursorFuture := right
+        for ev in eventBatch
+            bool exact = ev.kind == "aspect" or ev.kind == "aspect tangent" or ev.kind == "station" or ev.kind == "ingress" or ev.kind == "ingress tangent" or ev.kind == "clock alignment" or ev.kind == "clock alignment tangent"
+            bool pairAllowed = ev.kind != "aspect" and ev.kind != "aspect tangent" or aspectsOn
+            if exact and pairAllowed and ev.time > confirmedTime and (calendarMonth == 0 or month(ev.time,displayZone) == calendarMonth)
+                array<float> pos = f_coordinates(ev.time)
+                float y = f_body_level(ev.first,pos.get(ev.first),0,false)
+                if not na(y)
+                    string detail = "Future "+ev.kind+" "+names.get(ev.first)+(ev.second >= 0 ? "/"+names.get(ev.second) : "")+" "+str.tostring(f_mod(ev.target,360.0),"#.#")+"°"
+                    futureEventLabels.push(label.new(ev.time,y,detail+"\n"+str.format_time(ev.time,"yyyy-MM-dd HH:mm:ss",displayZone),xloc=xloc.bar_time,style=label.style_label_down,color=color.new(colors.get(ev.first),85),textcolor=chart.fg_color,size=size.tiny))
+                    if futureEventLabels.size() > 40
+                        label.delete(futureEventLabels.shift())
+        eventBatch.clear()
+```
+<!-- END FROZEN NATIVE PINE -->
